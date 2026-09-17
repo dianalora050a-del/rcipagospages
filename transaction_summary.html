@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pagos en línea - Mobilize Financial Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #f0f0f0; min-height: 100vh; display: flex; flex-direction: column; }
+
+        header { background: #fff; padding: 16px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        header img { height: 50px; max-width: 100%; display: block; }
+
+        .payment-zone-wrapper { background-color: #f0f0f0; min-height: 80vh; padding: 40px 16px; }
+        .payment-zone { max-width: 950px; width: 100%; margin: 0 auto; }
+
+        /* Override mat-card overflow: el CSS de Angular puede clippear contenido */
+        .mat-card {
+            background: #fff !important;
+            border-radius: 4px !important;
+            padding: 16px 60px !important;
+            box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px rgba(0,0,0,.14), 0 1px 10px rgba(0,0,0,.12) !important;
+            overflow: visible !important;
+        }
+        @media (max-width: 700px) { .mat-card { padding: 16px !important; } }
+
+        /* Título: sin clipping */
+        .summary-title {
+            font-weight: 700;
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 16px;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            overflow: visible;
+        }
+
+        /* Mat outline field */
+        .mat-form-field-outline-wrap { position: relative; margin: 4px 0; overflow: visible; }
+        .mat-form-field-outline-wrap label {
+            position: absolute; top: -10px; left: 12px;
+            font-size: 12px; color: rgba(0,0,0,0.6);
+            background: #fff; padding: 0 4px; pointer-events: none;
+            white-space: nowrap;
+        }
+        .mat-form-field-outline-wrap input {
+            width: 100%;
+            border: 1px solid rgba(0,0,0,0.38);
+            border-radius: 5px;
+            padding: 14px 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            height: auto;
+            min-height: 48px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            color: #212529;
+            background: transparent;
+            overflow: visible;
+        }
+        .mat-form-field-outline-wrap input:focus { border-color: #e8391e; border-width: 2px; }
+        .mat-form-field-outline-wrap.readonly input {
+            pointer-events: none; user-select: none; cursor: default;
+            border: 1px solid rgba(0,0,0,0.20); background: transparent;
+        }
+
+        /* Tabla con scroll horizontal */
+        .payment-table-wrapper { overflow-x: auto; margin: 12px 0 12px 0; -webkit-overflow-scrolling: touch; }
+        .payment-table { border-collapse: collapse; }
+        .payment-table th {
+            background-color: #d3d3d3; font-size: inherit;
+            font-weight: 700; padding: 0.5em; white-space: nowrap; text-align: left;
+        }
+        @media (min-width: 930px) { .payment-table th { padding: 1em; } }
+        .payment-table td { padding: 8px; vertical-align: middle; }
+
+        /* Campo valor a pagar dentro de tabla */
+        .valuetopay-wrap {
+            position: relative; display: inline-flex; align-items: center;
+            border: 1px solid rgba(0,0,0,0.38); border-radius: 5px;
+            padding: 8px 8px 8px 20px; min-width: 130px;
+        }
+        .valuetopay-wrap .prefix { position: absolute; left: 8px; font-size: 14px; font-weight: 500; }
+        .valuetopay-wrap input {
+            border: none; outline: none; font-size: 14px;
+            font-family: 'Poppins', sans-serif; text-align: right; width: 100px; background: transparent;
+        }
+
+        /* Total readonly */
+        .value-read-wrapper { position: relative; }
+        .value-read-wrapper .unable-touch-trans { position: absolute; top: 0; left: 0; z-index: 10; width: 100%; height: 100%; }
+        .only-read-input { position: relative; display: inline-flex; align-items: center; }
+        .prefix-only-read { font-weight: 700; margin-right: 4px; font-size: 14px; }
+        .value-read-only {
+            background-color: #d3d3d3 !important; border-radius: 2em !important;
+            font-weight: 700; border: none; padding: 6px 16px 6px 28px;
+            font-size: 14px; font-family: 'Poppins', sans-serif;
+            min-width: 140px; max-width: 100%; text-align: right;
+        }
+
+        /* PSE */
+        .pse-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+        .mat-checkbox-bg {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 16px; height: 16px; border-radius: 2px;
+            background-color: #e8391e; flex-shrink: 0;
+        }
+        .mat-checkbox-bg svg { width: 16px; height: 16px; }
+        .pse-label { font-size: 14px; flex: 1; min-width: 150px; }
+        .pse-logo img { width: 25px; }
+
+        /* Botones */
+        .buttons-row { display: flex; flex-direction: column; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+        @media (min-width: 420px) { .buttons-row { flex-direction: row; } }
+        .mat-flat-button {
+            display: block; width: 100%; border: none; border-radius: 4px;
+            padding: 0 16px; line-height: 36px; font-size: 14px;
+            font-family: 'Poppins', sans-serif; font-weight: 500;
+            cursor: pointer; text-align: center; min-width: 64px;
+            letter-spacing: 0.0892857143em; text-transform: uppercase;
+        }
+        @media (min-width: 420px) { .mat-flat-button { display: inline-block; width: auto; } }
+        .mat-primary { background-color: #e8391e; color: #fff; }
+        .mat-primary:hover { background-color: #c72f18; }
+        .mat-accent { background-color: #ff5722; color: #fff; }
+        .mat-accent:hover { background-color: #e64a19; }
+
+        /* Error */
+        .error-msg { background: #ffeaea; border: 1px solid #f5c6c6; border-radius: 4px; padding: 12px 16px; color: #c0392b; margin-bottom: 16px; font-size: 14px; }
+
+        /* Disclaimer */
+        main.disclaimer { flex: 1; text-align: justify; padding: 20px; margin-top: 40px; }
+        main.disclaimer p { margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
+
+        /* Footer */
+        footer { background: #fff; padding: 12px 24px; border-top: 1px solid #e0e0e0; }
+        footer img { max-height: 60px; max-width: 100%; }
+
+        .d-flex { display: flex; }
+        .align-items-center { align-items: center; }
+        .pe-2 { padding-right: 8px; }
+        .py-3 { padding-top: 12px; padding-bottom: 12px; }
+        .mb-2 { margin-bottom: 8px; }
+        .row { display: flex; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 0; }
+    </style>
+</head>
+<body class="mat-typography">
+
+<header>
+    <img src="assets/logo.svg" alt="Mobilize Financial Services Logo">
+</header>
+
+<div class="payment-zone-wrapper py-5 px-3 px-sm-5">
+    <div class="payment-zone">
+        <div class="mat-card py-4">
+
+                            <main class="container-fluid">
+                    <div class="row">
+                        <h1 class="summary-title">Resumen de tu transacción</h1>
+                    </div>
+
+                    <!-- Número de crédito readonly -->
+                    <div class="row">
+                        <div class="col" style="position:relative; overflow:visible;">
+                            <div class="unable-touch" style="position:absolute;top:0;left:0;z-index:10;width:100%;height:100%;"></div>
+                            <div class="mat-form-field-outline-wrap readonly" style="width:100%;margin-bottom:16px;margin-top:8px;">
+                                <label>Número de crédito *</label>
+                                <input type="text" id="fieldNumero" value="" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla (scroll horizontal en móvil) -->
+                    <div class="row">
+                        <div class="col py-3 payment-table-wrapper">
+                            <table aria-label="datos de pago" class="payment-table">
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Pago mínimo</th>
+                                    <th>Fecha próximo<br>vencimiento</th>
+                                    <th>Valor a pagar</th>
+                                </tr>
+                                <tr>
+                                    <td id="fieldConcepto">—</td>
+                                    <td id="fieldPagoMin">—</td>
+                                    <td id="fieldVencimiento">—</td>
+                                    <td>
+                                        <div class="valuetopay-wrap">
+                                            <span class="prefix">$</span>
+                                            <input type="text" id="valuepay" inputmode="numeric" value="">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="row" style="margin-bottom:8px;">
+                        <div class="col py-3">
+                            <div class="value-read-wrapper">
+                                <div class="d-flex align-items-center">
+                                    <div class="unable-touch-trans"></div>
+                                    <span class="pe-2"><b>Total: &nbsp;$</b></span>
+                                    <input type="text" id="totalInput" class="value-read-only" value="" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PSE -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="pse-row">
+                                <div class="mat-checkbox-bg">
+                                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                        <path fill="none" stroke="white" stroke-width="2.1" d="M4.1,12.7 9,17.6 20.3,6.3"></path>
+                                    </svg>
+                                </div>
+                                <span class="pse-label">Pago PSE - débito desde tu cuenta de ahorros o corriente</span>
+                                <div class="pse-logo"><img src="assets/logoPse.png" alt="logo PSE"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="row">
+                        <div class="col">
+                            <div class="buttons-row">
+                                <button type="button" class="mat-flat-button mat-primary mb-2" onclick="window.location.href='/'">Regresar</button>
+                                <button type="button" class="mat-flat-button mat-accent" onclick="continuar()">Continuar</button>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+
+            
+        </div>
+    </div>
+</div>
+
+<main class="disclaimer">
+    <section>
+        <p>Todos los pagos serán aplicados según el horario bancario definido por la Entidad. De realizarse el pago fuera de este horario, éste será aplicado al siguiente día hábil bancario de conformidad con el Artículo 97 del Decreto 663 de 1993 (Estatuto Orgánico del Sistema Financiero).</p>
+        <p>Todo abono extraordinario realizado no adelantará cuotas del crédito; por defecto, éste será aplicado a capital bajo la modalidad de reducir el plazo. En caso de que desees que dicho abono sea abonado a capital bajo la modalidad de reducir cuota, una vez realices el pago deberás informar a la Entidad escribiendo al correo electrónico clientes@mobilize-fs.com o comunicándote con nuestras líneas de atención.</p>
+        <p>Si posees más de un crédito, es necesario realizar una transacción por cada uno.</p>
+        <p>Para resolver tus inquietudes sobre el crédito, contáctanos a través de nuestras líneas de atención.</p>
+    </section>
+</main>
+
+<footer>
+    <img src="assets/prueba 4.png" alt="Imagen ilustrativa">
+</footer>
+
+<script>
+    // ── Cargar datos desde sessionStorage ─────────────────────────────────────
+    const credito = JSON.parse(sessionStorage.getItem('rci_credito') || 'null');
+
+    if (!credito) {
+        window.location.href = '/';
+    } else {
+        const fmt = n => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const fmtFecha = iso => {
+            const d = new Date(iso);
+            return isNaN(d) ? iso : `${String(d.getUTCDate()).padStart(2,'0')}/${String(d.getUTCMonth()+1).padStart(2,'0')}/${d.getUTCFullYear()}`;
+        };
+
+        document.getElementById('fieldNumero').value      = credito.numero;
+        document.getElementById('fieldConcepto').textContent = credito.descripcion;
+        document.getElementById('fieldPagoMin').textContent  = '$' + fmt(credito.pagoMinimo);
+        document.getElementById('fieldVencimiento').textContent = fmtFecha(credito.fechaVencimiento);
+        document.getElementById('valuepay').value  = fmt(credito.pagoMinimo);
+        document.getElementById('totalInput').value = fmt(credito.pagoMinimo);
+    }
+
+    // ── Sincronizar total al editar ────────────────────────────────────────────
+    const valorInput = document.getElementById('valuepay');
+    const totalInput = document.getElementById('totalInput');
+
+    valorInput.addEventListener('input', () => {
+        const raw = valorInput.value.replace(/[^0-9.]/g, '');
+        const num = parseFloat(raw);
+        if (!isNaN(num) && raw !== '') {
+            totalInput.value = num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    });
+
+    function continuar() {
+        if (!credito) return;
+        const rawVal = valorInput.value.replace(/,/g, '');
+        const monto  = parseFloat(rawVal) || credito.pagoMinimo;
+
+        // Guardar datos para checkout
+        sessionStorage.setItem('rci_pago', JSON.stringify({
+            monto,
+            montoFmt: '$' + monto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            referencia: `${credito.numero}-${credito.cedula}`,
+            concepto:   credito.descripcion,
+            nombre:     credito.nombre,
+            apellidos:  credito.apellidos,
+            cedula:     credito.cedula,
+            email:      credito.email,
+            numero:     credito.numero,
+        }));
+
+        window.location.href = 'checkout.html';
+    }
+</script>
+
+</body>
+</html>

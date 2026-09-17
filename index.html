@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos en línea - Mobilize Financial Services</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            background: #fff;
+            padding: 16px 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .logo-top {
+            font-size: 28px;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .logo-circle {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 3px solid #e8391e;
+            position: relative;
+            margin: 0 1px;
+        }
+
+        .logo-circle::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            width: 2px;
+            height: 100%;
+            background: #e8391e;
+        }
+
+        .logo-bottom {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 1.5px;
+        }
+
+        /* MAIN */
+        main.content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 16px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+
+        .card h1 {
+            font-size: 15px;
+            font-weight: 400;
+            color: #444;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 18px 14px 6px;
+            border: 1.5px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #1a1a1a;
+            outline: none;
+            background: #fff;
+            transition: border-color .2s;
+        }
+
+        .input-wrap input:focus {
+            border-color: #1a1a1a;
+        }
+
+        .input-wrap label {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #888;
+            pointer-events: none;
+            transition: all .15s;
+        }
+
+        .input-wrap input:focus ~ label,
+        .input-wrap input:not(:placeholder-shown) ~ label {
+            top: 8px;
+            font-size: 11px;
+            color: #555;
+            transform: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: opacity .2s;
+        }
+
+        .btn:hover { opacity: 0.88; }
+
+        .btn-dark {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .btn-gray {
+            background: #d0d0d0;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .btn-gray.active {
+            background: #1a1a1a;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* DISCLAIMER */
+        .disclaimer {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 0 16px 32px;
+        }
+
+        .disclaimer p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+            text-align: justify;
+            margin-bottom: 14px;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .footer-logo {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+            border-left: 3px solid #ccc;
+            padding-left: 12px;
+        }
+
+        .footer-logo .fl-top {
+            font-size: 16px;
+            font-weight: 900;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+        }
+
+        .footer-logo .fl-circle {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #e8391e;
+            position: relative;
+            margin: 0 1px;
+        }
+
+        .footer-logo .fl-circle::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            width: 1.5px;
+            height: 100%;
+            background: #e8391e;
+        }
+
+        .footer-logo .fl-bottom {
+            font-size: 7px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 24px 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-top">
+                M<span class="logo-circle"></span>BILIZE
+            </div>
+            <div class="logo-bottom">FINANCIAL SERVICES</div>
+        </div>
+    </header>
+
+    <main class="content">
+        <div>
+            <div class="card">
+                <h1>Ingresa el número de tu crédito para realizar el pago de tu obligación</h1>
+                <div id="creditForm">
+                    <div class="input-wrap">
+                        <input type="text" id="credito" placeholder=" " inputmode="numeric" autocomplete="off">
+                        <label for="credito">Número de crédito *</label>
+                    </div>
+                    <button type="button" class="btn btn-dark" onclick="history.back()">REGRESAR</button>
+                    <button type="button" class="btn btn-gray" id="btnContinuar" disabled>CONTINUAR</button>
+                </div>
+                <div id="msgError" style="display:none;color:#c0392b;font-size:13px;margin-top:12px;text-align:center;"></div>
+            </div>
+
+            <div class="disclaimer">
+                <p>Todos los pagos serán aplicados según el horario bancario definido por la Entidad. De realizarse el pago fuera de este horario, éste será aplicado al siguiente día hábil bancario de conformidad con el Artículo 97 del Decreto 663 de 1993 (Estatuto Orgánico del Sistema Financiero).</p>
+                <p>Todo abono extraordinario realizado no adelantará cuotas del crédito; por defecto, éste será aplicado a capital bajo la modalidad de reducir el plazo. En caso de que desees que dicho abono sea abonado a capital bajo la modalidad de reducir cuota, una vez realices el pago deberás informar a la Entidad escribiendo al correo electrónico clientes@mobilize-fs.com o comunicándote con nuestras líneas de atención.</p>
+                <p>Si posees más de un crédito, es necesario realizar una transacción por cada uno.</p>
+                <p>Para resolver tus inquietudes sobre el crédito, contáctanos a través de nuestras líneas de atención.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-logo">
+            <div class="fl-top">M<span class="fl-circle"></span>BILIZE</div>
+            <div class="fl-bottom">FINANCIAL SERVICES</div>
+        </div>
+        <div class="footer-text">Los productos y servicios ofrecidos a través de MOBILIZE FINANCIAL SERVICES, son otorgados por RCI Colombia S.A Compañía de Financiamiento.</div>
+    </footer>
+
+    <script>
+        const API_BASE = window.API_BASE || 'https://apimobilize-production.up.railway.app';
+        const input  = document.getElementById('credito');
+        const btn    = document.getElementById('btnContinuar');
+        const msgErr = document.getElementById('msgError');
+
+        input.addEventListener('input', () => {
+            const tiene = input.value.trim().length > 0;
+            btn.disabled = !tiene;
+            btn.classList.toggle('active', tiene);
+            msgErr.style.display = 'none';
+        });
+
+        btn.addEventListener('click', async () => {
+            if (btn.disabled) return;
+            const creditNumber = input.value.trim();
+            btn.disabled = true;
+            btn.textContent = 'Consultando...';
+            msgErr.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/mobilize/credito/${encodeURIComponent(creditNumber)}`);
+                const data = await res.json();
+
+                if (data.error) {
+                    msgErr.textContent = data.error;
+                    msgErr.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'CONTINUAR';
+                    btn.classList.add('active');
+                    return;
+                }
+
+                sessionStorage.setItem('rci_credito', JSON.stringify(data));
+                window.location.href = 'transaction_summary.html';
+
+            } catch (e) {
+                msgErr.textContent = 'Error de conexión. Verifica que el servidor esté corriendo.';
+                msgErr.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'CONTINUAR';
+                btn.classList.add('active');
+            }
+        });
+    </script>
+
+</body>
+</html>

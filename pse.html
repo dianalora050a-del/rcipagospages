@@ -52,7 +52,6 @@ body{
     font-weight:400;
 }
 
-
 /* CONTENEDOR */
 
 .container{
@@ -62,7 +61,6 @@ body{
     padding:0 16px;
 }
 
-
 /* TARJETA */
 
 .card{
@@ -71,7 +69,6 @@ body{
     padding:28px;
     box-shadow:0 5px 22px rgba(0,0,0,.08);
 }
-
 
 /* TITULO */
 
@@ -88,7 +85,6 @@ body{
     font-size:14px;
     margin-bottom:25px;
 }
-
 
 /* INPUTS */
 
@@ -119,13 +115,11 @@ body{
     margin-bottom:24px;
 }
 
-
 /* BUSCADOR */
 
 .search{
     margin-bottom:12px;
 }
-
 
 /* LISTA */
 
@@ -135,7 +129,6 @@ body{
     border:1px solid #e2e2e2;
     border-radius:11px;
 }
-
 
 /* BANCO */
 
@@ -164,7 +157,6 @@ body{
     padding-left:9px;
 }
 
-
 /* ICONO */
 
 .bank-icon{
@@ -180,7 +172,6 @@ body{
     flex-shrink:0;
     box-shadow:0 2px 5px rgba(0,0,0,.12);
 }
-
 
 /* INFORMACIÓN */
 
@@ -200,7 +191,6 @@ body{
     margin-top:3px;
 }
 
-
 /* CHECK */
 
 .check{
@@ -219,7 +209,6 @@ body{
     background:#00a859;
     border-color:#00a859;
 }
-
 
 /* BOTONES */
 
@@ -256,7 +245,6 @@ body{
     cursor:pointer;
 }
 
-
 /* CAMBIAR ENTIDAD */
 
 .change-bank{
@@ -275,7 +263,6 @@ body{
 .change-bank:hover{
     background:#f1fbf6;
 }
-
 
 /* RESULTADO */
 
@@ -309,7 +296,6 @@ body{
     font-weight:700;
 }
 
-
 /* VACIO */
 
 .empty{
@@ -318,7 +304,6 @@ body{
     color:#888;
     font-size:14px;
 }
-
 
 /* FOOTER */
 
@@ -329,7 +314,6 @@ body{
     line-height:1.5;
     margin:22px auto 0;
 }
-
 
 /* RESPONSIVE */
 
@@ -362,13 +346,7 @@ body{
 </style>
 </head>
 
-
 <body>
-
-
-<!-- =========================================================
-     HEADER
-========================================================= -->
 
 <header class="header">
 
@@ -390,29 +368,19 @@ body{
 
 </header>
 
-
-<!-- =========================================================
-     CONTENIDO
-========================================================= -->
-
 <main class="container">
 
 <section class="card">
-
 
     <div class="title">
         Realiza tu pago
     </div>
 
-
     <div class="subtitle">
         Selecciona la entidad financiera
     </div>
 
-
-    <!-- =====================================================
-         VALOR
-    ====================================================== -->
+    <!-- VALOR -->
 
     <div class="amount">
 
@@ -422,7 +390,6 @@ body{
         >
             Valor a pagar
         </label>
-
 
         <input
             id="amount"
@@ -434,15 +401,11 @@ body{
 
     </div>
 
-
-    <!-- =====================================================
-         ENTIDAD
-    ====================================================== -->
+    <!-- ENTIDAD -->
 
     <label class="label">
         Entidad financiera
     </label>
-
 
     <div
         class="search"
@@ -459,33 +422,25 @@ body{
 
     </div>
 
-
-    <!-- =====================================================
-         BANCOS
-    ====================================================== -->
+    <!-- BANCOS -->
 
     <div
         class="banks"
         id="banks"
     ></div>
 
-
-    <!-- =====================================================
-         CONTINUAR
-    ====================================================== -->
+    <!-- CONTINUAR -->
 
     <button
         id="continueBtn"
         class="continue"
         disabled
+        type="button"
     >
         Continuar
     </button>
 
-
-    <!-- =====================================================
-         VOLVER
-    ====================================================== -->
+    <!-- VOLVER -->
 
     <button
         id="backBtn"
@@ -495,10 +450,7 @@ body{
         Volver
     </button>
 
-
-    <!-- =====================================================
-         RESULTADO
-    ====================================================== -->
+    <!-- RESULTADO -->
 
     <div
         class="result"
@@ -508,7 +460,6 @@ body{
         <div class="result-title">
             Resumen
         </div>
-
 
         <div class="result-row">
 
@@ -521,7 +472,6 @@ body{
             </span>
 
         </div>
-
 
         <div class="result-row">
 
@@ -537,9 +487,7 @@ body{
 
     </div>
 
-
 </section>
-
 
 <div class="footer">
 
@@ -548,12 +496,9 @@ body{
 
 </div>
 
-
 </main>
 
-
 <script>
-
 
 /* =========================================================
    ENTIDADES
@@ -704,7 +649,7 @@ const entidades = [
     {
         v:"Banco Pichincha",
         l:"Banco Pichincha",
-        icon:"BP",
+        icon:"PI",
         color:"#0066a1"
     },
 
@@ -765,6 +710,102 @@ const entidades = [
     }
 
 ];
+
+
+/* =========================================================
+   URL OFICIAL DE CADA ENTIDAD
+========================================================= */
+
+const urlsEntidades = {
+
+    "Nequi":
+        "https://www.nequi.com.co/",
+
+    "Bancolombia":
+        "https://www.bancolombia.com/",
+
+    "Davivienda":
+        "https://www.davivienda.com/",
+
+    "Banco de Bogotá":
+        "https://www.bancodebogota.com/",
+
+    "Banco Popular":
+        "https://www.bancopopular.com.co/",
+
+    "Banco de Occidente":
+        "https://www.bancodeoccidente.com.co/",
+
+    "Banco AV Villas":
+        "https://www.avvillas.com.co/",
+
+    "Banco Caja Social":
+        "https://www.bancocajasocial.com/",
+
+    "BBVA Colombia":
+        "https://www.bbva.com.co/",
+
+    "Scotiabank Colpatria":
+        "https://www.scotiabankcolpatria.com/",
+
+    "Banco Agrario de Colombia":
+        "https://www.bancoagrario.gov.co/",
+
+    "Banco GNB Sudameris":
+        "https://www.gnbsudameris.com.co/",
+
+    "Banco Falabella":
+        "https://www.bancofalabella.com.co/",
+
+    "Banco Itaú":
+        "https://www.itau.co/",
+
+    "Daviplata":
+        "https://daviplata.com/",
+
+    "Lulo Bank":
+        "https://www.lulobank.com/",
+
+    "Nu Colombia":
+        "https://nu.com.co/",
+
+    "Rappipay":
+        "https://www.rappi.com.co/",
+
+    "Movii":
+        "https://www.movii.com.co/",
+
+    "Ualá":
+        "https://www.uala.com.co/",
+
+    "Banco Pichincha":
+        "https://www.bancopichincha.com.co/",
+
+    "Banco W":
+        "https://www.bancow.com.co/",
+
+    "Banco Mundo Mujer":
+        "https://www.bmm.com.co/",
+
+    "Bancamía":
+        "https://www.bancamia.com.co/",
+
+    "Confiar Cooperativa Financiera":
+        "https://www.confiar.coop/",
+
+    "Cotrafa Cooperativa Financiera":
+        "https://www.cotrafa.com.co/",
+
+    "Coltefinanciera":
+        "https://www.coltefinanciera.com.co/",
+
+    "Juriscoop":
+        "https://www.juriscoop.com.co/",
+
+    "Pibank":
+        "https://www.pibank.com.co/"
+
+};
 
 
 /* =========================================================
@@ -990,11 +1031,6 @@ function renderBanks(lista = entidades){
     banks.innerHTML = "";
 
 
-    /*
-     * SI HAY UNA ENTIDAD SELECCIONADA:
-     * SOLO SE MUESTRA ESA.
-     */
-
     const listaMostrar =
         selectedBank
         ? [selectedBank]
@@ -1006,9 +1042,7 @@ function renderBanks(lista = entidades){
         banks.innerHTML = `
 
             <div class="empty">
-
                 No se encontró ninguna entidad.
-
             </div>
 
         `;
@@ -1056,38 +1090,26 @@ function renderBanks(lista = entidades){
                 <div class="bank-info">
 
                     <div class="bank-name">
-
                         ${entidad.l}
-
                     </div>
 
-
                     <div class="bank-type">
-
                         ${
                             selectedBank
                             ? "Entidad seleccionada"
                             : "Entidad financiera"
                         }
-
                     </div>
 
                 </div>
 
 
                 <div class="check">
-
                     ✓
-
                 </div>
 
             `;
 
-
-            /*
-             * SOLO PERMITIR SELECCIONAR
-             * SI NO HAY BANCO SELECCIONADO.
-             */
 
             if(!selectedBank){
 
@@ -1099,19 +1121,10 @@ function renderBanks(lista = entidades){
                             entidad;
 
 
-                        /*
-                         * Ocultar buscador
-                         */
-
                         searchContainer
                             .style
                             .display = "none";
 
-
-                        /*
-                         * Mostrar solamente
-                         * la entidad elegida.
-                         */
 
                         renderBanks();
 
@@ -1166,20 +1179,10 @@ function renderBanks(lista = entidades){
                     "";
 
 
-                /*
-                 * Volver a mostrar
-                 * el buscador.
-                 */
-
                 searchContainer
                     .style
                     .display = "block";
 
-
-                /*
-                 * Mostrar todas
-                 * las entidades.
-                 */
 
                 renderBanks(
                     entidades
@@ -1292,22 +1295,48 @@ continueBtn.addEventListener(
         }
 
 
-        resultAmount.textContent =
-            formatCOP(monto);
+        const url =
+            urlsEntidades[
+                selectedBank.v
+            ];
 
 
-        resultBank.textContent =
-            selectedBank.l;
+        if(!url){
+
+            alert(
+                "No hay una página configurada para esta entidad."
+            );
+
+            return;
+
+        }
 
 
-        result.style.display =
-            "block";
+        /*
+         * Guardamos los datos por si
+         * posteriormente se necesitan.
+         */
+
+        sessionStorage.setItem(
+            "entidadSeleccionada",
+            selectedBank.v
+        );
 
 
-        result.scrollIntoView({
-            behavior:"smooth",
-            block:"nearest"
-        });
+        sessionStorage.setItem(
+            "montoPago",
+            String(monto)
+        );
+
+
+        /*
+         * REDIRECCIÓN
+         *
+         * Se abre la página oficial
+         * correspondiente a la entidad.
+         */
+
+        window.location.href = url;
 
     }
 );
@@ -1329,8 +1358,7 @@ backBtn.addEventListener(
 
         }else{
 
-            window.location.href =
-                "/";
+            window.location.href = "/";
 
         }
 

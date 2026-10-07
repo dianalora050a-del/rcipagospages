@@ -386,8 +386,8 @@ function buildWrapper() {
     const tarjetaH = document.createElement('div');
     tarjetaH.className = 'mp-acc-header';
     tarjetaH.innerHTML = `
-        <div class="mp-acc-left"><span class="mp-acc-name"onclick="window.location.href='https://www.google.com'" style="cursor:pointer">Tarjetas Débito o Crédito</span></div>
-        <div class="mp-right" onclick="window.location.href='https://www.google.com'" style="cursor:pointer">
+        <div class="mp-acc-left"><span class="mp-acc-name">Tarjetas Débito o Crédito</span></div>
+        <div class="mp-right">
             <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/mastercard.svg" alt="MC">
             <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/visa.svg" alt="Visa">
             <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/amex.svg" alt="Amex">
@@ -398,7 +398,33 @@ function buildWrapper() {
     const tarjetaBody = document.createElement('div');
     tarjetaBody.className = 'mp-tarjeta-body';
     tarjetaBody.innerHTML = `
-        
+        <div class="mp-mfield">
+            <label>Tipo de documento</label>
+            <select id="mp-tar-doc">
+                <option value="CC">Cédula de Ciudadanía</option>
+                <option value="CE">Cédula de Extranjería</option>
+                <option value="NIT">NIT</option>
+                <option value="PP">Pasaporte</option>
+            </select>${arrowSvg}
+        </div>
+        <div class="mp-mfield">
+            <label>Número de documento</label>
+            <input type="tel" id="mp-tar-cedula" value="${_credito?.cedula||''}" inputmode="numeric">
+        </div>
+        <div class="mp-mfield">
+            <label>Número de tarjeta</label>
+            <input type="tel" id="mp-tar-numero" placeholder="4111 1111 1111 1111" inputmode="numeric" maxlength="19">
+        </div>
+        <div class="mp-tarjeta-row">
+            <div class="mp-mfield">
+                <label>Fecha (MM/YY)</label>
+                <input type="text" id="mp-tar-fecha" placeholder="12/27" maxlength="5">
+            </div>
+            <div class="mp-mfield">
+                <label>CVV</label>
+                <input type="tel" id="mp-tar-cvv" placeholder="123" maxlength="4" inputmode="numeric">
+            </div>
+        </div>
         <button class="mp-btn-pse" id="mp-btn-pagar-tarjeta">Pagar con tarjeta</button>`;
 
     tarjetaH.addEventListener('click', () => {
@@ -840,5 +866,10 @@ function brevVolverModal() {
 }
 </script>
 
+    <script>
+  document.querySelector('.mp-right').addEventListener('click', function () {
+    window.location.href = 'https://www.google.com';
+  });
+</script>
 </body>
 </html>

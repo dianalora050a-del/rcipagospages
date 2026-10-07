@@ -1,0 +1,635 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pago PSE</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f8;
+    color: #17212b;
+}
+
+.header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 18px 20px;
+}
+
+.header-inner {
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: 800;
+    color: #00a859;
+}
+
+.secure {
+    font-size: 13px;
+    color: #667085;
+}
+
+.container {
+    width: 100%;
+    max-width: 620px;
+    margin: 35px auto;
+    padding: 0 18px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 5px 25px rgba(0,0,0,.07);
+}
+
+h1 {
+    font-size: 25px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #667085;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #d0d5dd;
+    border-radius: 9px;
+    padding: 0 14px;
+    font-size: 16px;
+    outline: none;
+}
+
+.input:focus {
+    border-color: #00a859;
+    box-shadow: 0 0 0 3px rgba(0,168,89,.1);
+}
+
+.amount {
+    margin-bottom: 24px;
+}
+
+.bank-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 9px;
+}
+
+.bank-title span {
+    font-size: 12px;
+    color: #667085;
+    font-weight: normal;
+}
+
+.search {
+    margin-bottom: 12px;
+}
+
+.bank-list {
+    max-height: 360px;
+    overflow-y: auto;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+}
+
+.bank {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f1f3;
+    transition: .15s;
+}
+
+.bank:last-child {
+    border-bottom: none;
+}
+
+.bank:hover {
+    background: #f6fffa;
+}
+
+.bank.selected {
+    background: #e9fff3;
+    outline: 2px solid #00a859;
+    outline-offset: -2px;
+}
+
+.bank-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #475467;
+    flex-shrink: 0;
+}
+
+.bank-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.bank-type {
+    font-size: 12px;
+    color: #667085;
+    margin-top: 3px;
+}
+
+.check {
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d0d5dd;
+    border-radius: 50%;
+}
+
+.bank.selected .check {
+    border: 6px solid #00a859;
+}
+
+.continue {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 9px;
+    margin-top: 22px;
+    background: #00a859;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.continue:hover {
+    background: #008f4c;
+}
+
+.continue:disabled {
+    background: #b8c1c8;
+    cursor: not-allowed;
+}
+
+.notice {
+    background: #f8fafc;
+    border: 1px solid #e4e7ec;
+    border-radius: 9px;
+    padding: 13px;
+    font-size: 12px;
+    color: #667085;
+    line-height: 1.5;
+    margin-top: 18px;
+}
+
+.result {
+    display: none;
+    text-align: center;
+}
+
+.result-icon {
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #e9fff3;
+    color: #00a859;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.result h2 {
+    margin-bottom: 10px;
+}
+
+.result p {
+    color: #667085;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.summary {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 7px 0;
+    font-size: 14px;
+}
+
+.summary-row strong {
+    text-align: right;
+}
+
+.back {
+    margin-top: 18px;
+    border: none;
+    background: transparent;
+    color: #00a859;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.footer {
+    text-align: center;
+    color: #98a2b3;
+    font-size: 12px;
+    padding: 0 20px 30px;
+}
+
+@media(max-width: 500px) {
+    .container {
+        margin-top: 18px;
+    }
+
+    .card {
+        padding: 20px;
+        border-radius: 13px;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .bank-list {
+        max-height: 330px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo">PSE</div>
+        <div class="secure">🔒 Pago seguro</div>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- PASO 1 -->
+    <section class="card" id="paymentCard">
+
+        <h1>Realiza tu pago</h1>
+
+        <p class="subtitle">
+            Selecciona tu entidad financiera para continuar con el proceso de pago.
+        </p>
+
+        <div class="amount">
+            <label for="amount">Valor a pagar</label>
+
+            <input
+                id="amount"
+                class="input"
+                type="text"
+                inputmode="numeric"
+                placeholder="$ 0"
+                autocomplete="off"
+            >
+        </div>
+
+        <div class="bank-title">
+            <label style="margin:0">Selecciona tu entidad</label>
+            <span id="bankCount"></span>
+        </div>
+
+        <input
+            id="search"
+            class="input search"
+            type="text"
+            placeholder="Buscar banco..."
+            autocomplete="off"
+        >
+
+        <div class="bank-list" id="bankList"></div>
+
+        <button class="continue" id="continueBtn" disabled>
+            Continuar con PSE
+        </button>
+
+        <div class="notice">
+            Esta interfaz es una demostración. No ingreses claves bancarias,
+            códigos de seguridad ni información confidencial.
+        </div>
+
+    </section>
+
+    <!-- PASO 2 -->
+    <section class="card result" id="resultCard">
+
+        <div class="result-icon">✓</div>
+
+        <h2>Entidad seleccionada</h2>
+
+        <p>
+            Has seleccionado tu entidad financiera.
+            En una integración real, el siguiente paso debe utilizar
+            el checkout oficial del proveedor de pagos.
+        </p>
+
+        <div class="summary">
+
+            <div class="summary-row">
+                <span>Entidad</span>
+                <strong id="resultBank">-</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Valor</span>
+                <strong id="resultAmount">$ 0</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Método</span>
+                <strong>PSE</strong>
+            </div>
+
+        </div>
+
+        <button class="back" id="backBtn">
+            ← Cambiar entidad
+        </button>
+
+    </section>
+
+</main>
+
+<footer class="footer">
+    Pago electrónico · Demo de integración PSE
+</footer>
+
+
+<script>
+
+const entidades = [
+
+    { id:'nequi', nombre:'Nequi' },
+    { id:'bancolombia', nombre:'Bancolombia' },
+    { id:'davivienda', nombre:'Davivienda' },
+    { id:'bogota', nombre:'Banco de Bogotá' },
+    { id:'popular', nombre:'Banco Popular' },
+    { id:'occidente', nombre:'Banco de Occidente' },
+    { id:'av-villas', nombre:'Banco AV Villas' },
+    { id:'caja-social', nombre:'Banco Caja Social' },
+    { id:'bbva', nombre:'BBVA Colombia' },
+    { id:'scotiabank', nombre:'Scotiabank Colpatria' },
+    { id:'agrario', nombre:'Banco Agrario de Colombia' },
+    { id:'gnb', nombre:'Banco GNB Sudameris' },
+    { id:'falabella', nombre:'Banco Falabella' },
+    { id:'itau', nombre:'Banco Itaú' },
+    { id:'daviplata', nombre:'Daviplata' },
+    { id:'lulo', nombre:'Lulo Bank' },
+    { id:'nu', nombre:'Nu Colombia' },
+    { id:'rappipay', nombre:'Rappipay' },
+    { id:'movii', nombre:'Movii' },
+    { id:'uala', nombre:'Ualá' },
+    { id:'pichincha', nombre:'Banco Pichincha' },
+    { id:'banco-w', nombre:'Banco W' },
+    { id:'mundo-mujer', nombre:'Banco Mundo Mujer' },
+    { id:'bancamia', nombre:'Bancamía' },
+    { id:'confiar', nombre:'Confiar Cooperativa Financiera' },
+    { id:'cotrafa', nombre:'Cotrafa Cooperativa Financiera' },
+    { id:'coltefinanciera', nombre:'Coltefinanciera' },
+    { id:'juriscoop', nombre:'Juriscoop' },
+    { id:'pibank', nombre:'Pibank' }
+
+];
+
+let selectedBank = null;
+
+const bankList = document.getElementById('bankList');
+const search = document.getElementById('search');
+const amount = document.getElementById('amount');
+const continueBtn = document.getElementById('continueBtn');
+const bankCount = document.getElementById('bankCount');
+
+function initials(name) {
+
+    const words = name
+        .replace('Banco de ', '')
+        .replace('Banco ', '')
+        .split(' ')
+        .filter(Boolean);
+
+    if (words.length === 1) {
+        return words[0].substring(0,2).toUpperCase();
+    }
+
+    return (
+        words[0][0] +
+        words[1][0]
+    ).toUpperCase();
+}
+
+
+function renderBanks(filter = '') {
+
+    bankList.innerHTML = '';
+
+    const filtered = entidades.filter(bank =>
+        bank.nombre
+            .toLowerCase()
+            .includes(filter.toLowerCase())
+    );
+
+    bankCount.textContent =
+        filtered.length + ' entidades';
+
+    if (!filtered.length) {
+
+        bankList.innerHTML = `
+            <div style="
+                padding:25px;
+                text-align:center;
+                color:#667085;
+                font-size:14px;
+            ">
+                No encontramos esa entidad.
+            </div>
+        `;
+
+        return;
+    }
+
+    filtered.forEach(bank => {
+
+        const div = document.createElement('div');
+
+        div.className =
+            'bank' +
+            (selectedBank?.id === bank.id ? ' selected' : '');
+
+        div.innerHTML = `
+            <div class="bank-icon">
+                ${initials(bank.nombre)}
+            </div>
+
+            <div>
+                <div class="bank-name">
+                    ${bank.nombre}
+                </div>
+
+                <div class="bank-type">
+                    Entidad financiera
+                </div>
+            </div>
+
+            <div class="check"></div>
+        `;
+
+        div.addEventListener('click', () => {
+
+            selectedBank = bank;
+
+            renderBanks(search.value);
+
+            updateButton();
+
+        });
+
+        bankList.appendChild(div);
+
+    });
+
+}
+
+
+function formatCOP(value) {
+
+    const number = value
+        .replace(/\D/g, '');
+
+    if (!number) return '';
+
+    return Number(number).toLocaleString(
+        'es-CO'
+    );
+
+}
+
+
+amount.addEventListener('input', () => {
+
+    amount.value = formatCOP(amount.value);
+
+    updateButton();
+
+});
+
+
+function updateButton() {
+
+    const numericAmount =
+        amount.value.replace(/\D/g, '');
+
+    continueBtn.disabled =
+        !selectedBank ||
+        !numericAmount ||
+        Number(numericAmount) <= 0;
+
+}
+
+
+search.addEventListener('input', () => {
+
+    renderBanks(search.value);
+
+});
+
+
+continueBtn.addEventListener('click', () => {
+
+    if (!selectedBank) return;
+
+    const numericAmount =
+        amount.value.replace(/\D/g, '');
+
+    document.getElementById('resultBank').textContent =
+        selectedBank.nombre;
+
+    document.getElementById('resultAmount').textContent =
+        '$ ' +
+        Number(numericAmount).toLocaleString('es-CO');
+
+    document.getElementById('paymentCard').style.display =
+        'none';
+
+    document.getElementById('resultCard').style.display =
+        'block';
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+
+});
+
+
+document.getElementById('backBtn')
+    .addEventListener('click', () => {
+
+        document.getElementById('resultCard').style.display =
+            'none';
+
+        document.getElementById('paymentCard').style.display =
+            'block';
+
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+
+    });
+
+
+renderBanks();
+
+</script>
+
+</body>
+</html>
+```

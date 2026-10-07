@@ -1,734 +1,821 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PSE - Pago seguro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSE RCI</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+*{
+    box-sizing:border-box;
+}
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6f8;
-            color: #333;
-        }
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f3f5f7;
+    color:#252525;
+}
 
-        .topbar {
-            background: #ffffff;
-            border-bottom: 1px solid #e4e4e4;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.header{
+    height:72px;
+    background:#fff;
+    border-bottom:1px solid #e5e5e5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
 
-        .pse-logo {
-            font-size: 34px;
-            font-weight: 800;
-            color: #00a859;
-            letter-spacing: -1px;
-        }
+.logo{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:30px;
+    font-weight:800;
+    letter-spacing:-1px;
+}
 
-        .container {
-            width: 100%;
-            max-width: 650px;
-            margin: 35px auto;
-            padding: 0 18px;
-        }
+.logo-pse{
+    color:#00a859;
+}
 
-        .card {
-            background: #ffffff;
-            border-radius: 14px;
-            padding: 28px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-        }
+.logo-rci{
+    color:#333;
+}
 
-        .title {
-            text-align: center;
-            font-size: 25px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #222;
-        }
+.logo-separator{
+    color:#bbb;
+    font-weight:400;
+}
 
-        .subtitle {
-            text-align: center;
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
+.container{
+    width:100%;
+    max-width:650px;
+    margin:32px auto;
+    padding:0 16px;
+}
 
-        .amount {
-            margin-bottom: 25px;
-        }
+.card{
+    background:#fff;
+    border-radius:16px;
+    padding:28px;
+    box-shadow:0 5px 22px rgba(0,0,0,.08);
+}
 
-        .amount label,
-        .bank-section label {
-            display: block;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #444;
-        }
+.title{
+    text-align:center;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:7px;
+}
 
-        .input {
-            width: 100%;
-            height: 50px;
-            border: 1px solid #d7d7d7;
-            border-radius: 8px;
-            padding: 0 15px;
-            font-size: 18px;
-            outline: none;
-            background: #fafafa;
-        }
+.subtitle{
+    text-align:center;
+    color:#777;
+    font-size:14px;
+    margin-bottom:25px;
+}
 
-        .input:focus {
-            border-color: #00a859;
-            background: #fff;
-        }
+.label{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:8px;
+}
 
-        .bank-search {
-            margin-bottom: 12px;
-        }
+.input{
+    width:100%;
+    height:50px;
+    border:1px solid #d8d8d8;
+    border-radius:9px;
+    padding:0 15px;
+    font-size:17px;
+    outline:none;
+    background:#fafafa;
+}
 
-        .banks {
-            max-height: 330px;
-            overflow-y: auto;
-            border: 1px solid #e2e2e2;
-            border-radius: 10px;
-            background: #fff;
-        }
+.input:focus{
+    border-color:#00a859;
+    background:#fff;
+}
 
-        .bank {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 13px 14px;
-            border-bottom: 1px solid #eeeeee;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+.amount{
+    margin-bottom:24px;
+}
 
-        .bank:last-child {
-            border-bottom: none;
-        }
+.search{
+    margin-bottom:12px;
+}
 
-        .bank:hover {
-            background: #f4fbf7;
-        }
+.banks{
+    max-height:360px;
+    overflow-y:auto;
+    border:1px solid #e2e2e2;
+    border-radius:11px;
+}
 
-        .bank.selected {
-            background: #e9f8f0;
-            border-left: 4px solid #00a859;
-        }
+.bank{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:13px;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+    transition:.18s;
+    background:#fff;
+}
 
-        .bank-logo {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: #00a859;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
+.bank:last-child{
+    border-bottom:0;
+}
 
-        .bank-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-        }
+.bank:hover{
+    background:#f5fbf8;
+}
 
-        .continue {
-            width: 100%;
-            height: 52px;
-            border: none;
-            border-radius: 8px;
-            margin-top: 22px;
-            background: #00a859;
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+.bank.selected{
+    background:#e8f8f0;
+    border-left:4px solid #00a859;
+    padding-left:9px;
+}
 
-        .continue:hover {
-            background: #008f4b;
-        }
+.bank-icon{
+    width:44px;
+    height:44px;
+    border-radius:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:12px;
+    font-weight:800;
+    flex-shrink:0;
+    box-shadow:0 2px 5px rgba(0,0,0,.12);
+}
 
-        .continue:disabled {
-            background: #b9b9b9;
-            cursor: not-allowed;
-        }
+.bank-info{
+    min-width:0;
+    flex:1;
+}
 
-        .back {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: #00a859;
-            font-size: 14px;
-            margin-top: 15px;
-            cursor: pointer;
-        }
+.bank-name{
+    font-size:15px;
+    font-weight:700;
+}
 
-        .result {
-            display: none;
-            margin-top: 22px;
-            border-radius: 10px;
-            background: #f4fbf7;
-            border: 1px solid #bfe8d1;
-            padding: 18px;
-        }
+.bank-type{
+    color:#888;
+    font-size:12px;
+    margin-top:3px;
+}
 
-        .result-title {
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #222;
-        }
+.check{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    border:2px solid #d4d4d4;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:12px;
+}
 
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 7px 0;
-            font-size: 14px;
-        }
+.bank.selected .check{
+    background:#00a859;
+    border-color:#00a859;
+}
 
-        .result-row span:first-child {
-            color: #777;
-        }
+.continue{
+    width:100%;
+    height:52px;
+    margin-top:22px;
+    border:0;
+    border-radius:9px;
+    background:#00a859;
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+}
 
-        .result-row span:last-child {
-            font-weight: 700;
-        }
+.continue:hover{
+    background:#008e4b;
+}
 
-        .footer {
-            text-align: center;
-            color: #888;
-            font-size: 12px;
-            margin-top: 25px;
-            line-height: 1.5;
-        }
+.continue:disabled{
+    background:#bcbcbc;
+    cursor:not-allowed;
+}
 
-        .empty {
-            padding: 25px;
-            text-align: center;
-            color: #888;
-            font-size: 14px;
-        }
+.back{
+    display:block;
+    width:100%;
+    margin-top:14px;
+    border:0;
+    background:none;
+    color:#00a859;
+    font-size:14px;
+    cursor:pointer;
+}
 
-        @media (max-width: 600px) {
-            .topbar {
-                height: 60px;
-            }
+.result{
+    display:none;
+    margin-top:22px;
+    padding:18px;
+    border:1px solid #bde7cf;
+    border-radius:10px;
+    background:#f2fbf6;
+}
 
-            .pse-logo {
-                font-size: 30px;
-            }
+.result-title{
+    font-weight:700;
+    margin-bottom:12px;
+}
 
-            .container {
-                margin: 20px auto;
-                padding: 0 12px;
-            }
+.result-row{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:6px 0;
+    font-size:14px;
+}
 
-            .card {
-                padding: 20px 16px;
-                border-radius: 10px;
-            }
+.result-row span:first-child{
+    color:#777;
+}
 
-            .title {
-                font-size: 22px;
-            }
-        }
-    </style>
+.result-row span:last-child{
+    font-weight:700;
+}
+
+.empty{
+    padding:25px;
+    text-align:center;
+    color:#888;
+    font-size:14px;
+}
+
+.footer{
+    text-align:center;
+    color:#888;
+    font-size:12px;
+    line-height:1.5;
+    margin:22px auto 0;
+}
+
+@media(max-width:600px){
+
+    .header{
+        height:64px;
+    }
+
+    .logo{
+        font-size:26px;
+    }
+
+    .container{
+        margin:18px auto;
+        padding:0 11px;
+    }
+
+    .card{
+        padding:20px 15px;
+        border-radius:12px;
+    }
+
+    .title{
+        font-size:21px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-    <header class="topbar">
-        <div class="pse-logo">PSE</div>
-    </header>
+<header class="header">
+    <div class="logo">
+        <span class="logo-pse">PSE</span>
+        <span class="logo-separator">|</span>
+        <span class="logo-rci">RCI</span>
+    </div>
+</header>
 
-    <main class="container">
+<main class="container">
 
-        <section class="card">
+<section class="card">
 
-            <div class="title">
-                Realiza tu pago
-            </div>
+    <div class="title">
+        Realiza tu pago
+    </div>
 
-            <div class="subtitle">
-                Selecciona tu entidad financiera para continuar
-            </div>
+    <div class="subtitle">
+        Selecciona la entidad financiera
+    </div>
 
-            <!-- VALOR -->
-            <div class="amount">
-                <label for="amount">Valor a pagar</label>
+    <!-- VALOR -->
+    <div class="amount">
+        <label class="label" for="amount">
+            Valor a pagar
+        </label>
 
-                <input
-                    id="amount"
-                    class="input"
-                    type="text"
-                    inputmode="numeric"
-                    placeholder="$ 0"
-                    autocomplete="off"
-                    readonly
-                >
-            </div>
+        <input
+            id="amount"
+            class="input"
+            type="text"
+            readonly
+            placeholder="$ 0"
+        >
+    </div>
 
-            <!-- BANCOS -->
-            <div class="bank-section">
+    <!-- BANCOS -->
+    <label class="label">
+        Entidad financiera
+    </label>
 
-                <label for="bankSearch">
-                    Selecciona tu banco
-                </label>
+    <div class="search">
+        <input
+            id="bankSearch"
+            class="input"
+            type="text"
+            placeholder="Buscar banco..."
+            autocomplete="off"
+        >
+    </div>
 
-                <div class="bank-search">
-                    <input
-                        id="bankSearch"
-                        class="input"
-                        type="text"
-                        placeholder="Buscar banco..."
-                        autocomplete="off"
-                    >
-                </div>
+    <div class="banks" id="banks"></div>
 
-                <div class="banks" id="banks"></div>
+    <button
+        id="continueBtn"
+        class="continue"
+        disabled
+    >
+        Continuar
+    </button>
 
-            </div>
+    <button
+        id="backBtn"
+        class="back"
+        type="button"
+    >
+        Volver
+    </button>
 
-            <button
-                class="continue"
-                id="continueBtn"
-                disabled
-            >
-                Continuar
-            </button>
+    <div class="result" id="result">
 
-            <button
-                class="back"
-                id="backBtn"
-                type="button"
-            >
-                Volver
-            </button>
-
-            <!-- RESULTADO -->
-            <div class="result" id="result">
-
-                <div class="result-title">
-                    Resumen del pago
-                </div>
-
-                <div class="result-row">
-                    <span>Valor a pagar</span>
-                    <span id="resultAmount">$ 0</span>
-                </div>
-
-                <div class="result-row">
-                    <span>Entidad seleccionada</span>
-                    <span id="resultBank">-</span>
-                </div>
-
-            </div>
-
-        </section>
-
-        <div class="footer">
-            Serás dirigido al proceso de pago correspondiente después de continuar.
+        <div class="result-title">
+            Resumen
         </div>
 
-    </main>
+        <div class="result-row">
+            <span>Valor a pagar</span>
+            <span id="resultAmount">$ 0</span>
+        </div>
 
-    <script>
+        <div class="result-row">
+            <span>Entidad</span>
+            <span id="resultBank">-</span>
+        </div>
 
-        /*
-         * ============================================================
-         * ENTIDADES DISPONIBLES
-         * ============================================================
-         */
+    </div>
 
-        const entidades = [
-            { v: 'Nequi', l: 'Nequi' },
-            { v: 'Bancolombia', l: 'Bancolombia' },
-            { v: 'Davivienda', l: 'Davivienda' },
-            { v: 'Banco de Bogotá', l: 'Banco de Bogotá' },
-            { v: 'Banco Popular', l: 'Banco Popular' },
-            { v: 'Banco de Occidente', l: 'Banco de Occidente' },
-            { v: 'Banco AV Villas', l: 'Banco AV Villas' },
-            { v: 'Banco Caja Social', l: 'Banco Caja Social' },
-            { v: 'BBVA Colombia', l: 'BBVA Colombia' },
-            { v: 'Scotiabank Colpatria', l: 'Scotiabank Colpatria' },
-            { v: 'Banco Agrario de Colombia', l: 'Banco Agrario de Colombia' },
-            { v: 'Banco GNB Sudameris', l: 'Banco GNB Sudameris' },
-            { v: 'Banco Falabella', l: 'Banco Falabella' },
-            { v: 'Banco Itaú', l: 'Banco Itaú' },
-            { v: 'Daviplata', l: 'Daviplata' },
-            { v: 'Lulo Bank', l: 'Lulo Bank' },
-            { v: 'Nu Colombia', l: 'Nu Colombia' },
-            { v: 'Rappipay', l: 'Rappipay' },
-            { v: 'Movii', l: 'Movii' },
-            { v: 'Ualá', l: 'Ualá' },
-            { v: 'Banco Pichincha', l: 'Banco Pichincha' },
-            { v: 'Banco W', l: 'Banco W' },
-            { v: 'Banco Mundo Mujer', l: 'Banco Mundo Mujer' },
-            { v: 'Bancamía', l: 'Bancamía' },
-            { v: 'Confiar Cooperativa Financiera', l: 'Confiar Cooperativa Financiera' },
-            { v: 'Cotrafa Cooperativa Financiera', l: 'Cotrafa Cooperativa Financiera' },
-            { v: 'Coltefinanciera', l: 'Coltefinanciera' },
-            { v: 'Juriscoop', l: 'Juriscoop' },
-            { v: 'Pibank', l: 'Pibank' }
-        ];
+</section>
+
+<div class="footer">
+    Selecciona una entidad financiera para continuar con el proceso.
+</div>
+
+</main>
+
+<script>
+
+const entidades = [
+
+    {
+        v:"Nequi",
+        l:"Nequi",
+        icon:"N",
+        color:"#df008d"
+    },
+
+    {
+        v:"Bancolombia",
+        l:"Bancolombia",
+        icon:"B",
+        color:"#ffcf00"
+    },
+
+    {
+        v:"Davivienda",
+        l:"Davivienda",
+        icon:"D",
+        color:"#ed1c24"
+    },
+
+    {
+        v:"Banco de Bogotá",
+        l:"Banco de Bogotá",
+        icon:"BD",
+        color:"#004b87"
+    },
+
+    {
+        v:"Banco Popular",
+        l:"Banco Popular",
+        icon:"BP",
+        color:"#00549c"
+    },
+
+    {
+        v:"Banco de Occidente",
+        l:"Banco de Occidente",
+        icon:"BO",
+        color:"#003b70"
+    },
+
+    {
+        v:"Banco AV Villas",
+        l:"Banco AV Villas",
+        icon:"AV",
+        color:"#0072bc"
+    },
+
+    {
+        v:"Banco Caja Social",
+        l:"Banco Caja Social",
+        icon:"CS",
+        color:"#008f5a"
+    },
+
+    {
+        v:"BBVA Colombia",
+        l:"BBVA Colombia",
+        icon:"BB",
+        color:"#072146"
+    },
+
+    {
+        v:"Scotiabank Colpatria",
+        l:"Scotiabank Colpatria",
+        icon:"SC",
+        color:"#e31837"
+    },
+
+    {
+        v:"Banco Agrario de Colombia",
+        l:"Banco Agrario de Colombia",
+        icon:"BA",
+        color:"#00843d"
+    },
+
+    {
+        v:"Banco GNB Sudameris",
+        l:"Banco GNB Sudameris",
+        icon:"GN",
+        color:"#005b9a"
+    },
+
+    {
+        v:"Banco Falabella",
+        l:"Banco Falabella",
+        icon:"BF",
+        color:"#00a6ce"
+    },
+
+    {
+        v:"Banco Itaú",
+        l:"Banco Itaú",
+        icon:"IT",
+        color:"#ec7000"
+    },
+
+    {
+        v:"Daviplata",
+        l:"Daviplata",
+        icon:"DP",
+        color:"#e60000"
+    },
+
+    {
+        v:"Lulo Bank",
+        l:"Lulo Bank",
+        icon:"L",
+        color:"#4c1d95"
+    },
+
+    {
+        v:"Nu Colombia",
+        l:"Nu Colombia",
+        icon:"Nu",
+        color:"#820ad1"
+    },
+
+    {
+        v:"Rappipay",
+        l:"Rappipay",
+        icon:"RP",
+        color:"#ff1744"
+    },
+
+    {
+        v:"Movii",
+        l:"Movii",
+        icon:"M",
+        color:"#ff0054"
+    },
+
+    {
+        v:"Ualá",
+        l:"Ualá",
+        icon:"U",
+        color:"#162447"
+    },
+
+    {
+        v:"Banco Pichincha",
+        l:"Banco Pichincha",
+        icon:"BP",
+        color:"#0066a1"
+    },
+
+    {
+        v:"Banco W",
+        l:"Banco W",
+        icon:"W",
+        color:"#f28c00"
+    },
+
+    {
+        v:"Banco Mundo Mujer",
+        l:"Banco Mundo Mujer",
+        icon:"MM",
+        color:"#e4007d"
+    },
+
+    {
+        v:"Bancamía",
+        l:"Bancamía",
+        icon:"BM",
+        color:"#008c95"
+    },
+
+    {
+        v:"Confiar Cooperativa Financiera",
+        l:"Confiar Cooperativa Financiera",
+        icon:"C",
+        color:"#006b54"
+    },
+
+    {
+        v:"Cotrafa Cooperativa Financiera",
+        l:"Cotrafa Cooperativa Financiera",
+        icon:"CF",
+        color:"#0067a5"
+    },
+
+    {
+        v:"Coltefinanciera",
+        l:"Coltefinanciera",
+        icon:"CF",
+        color:"#164a84"
+    },
+
+    {
+        v:"Juriscoop",
+        l:"Juriscoop",
+        icon:"J",
+        color:"#009b77"
+    },
+
+    {
+        v:"Pibank",
+        l:"Pibank",
+        icon:"PI",
+        color:"#00a99d"
+    }
+
+];
+
+const amount = document.getElementById("amount");
+const bankSearch = document.getElementById("bankSearch");
+const banks = document.getElementById("banks");
+const continueBtn = document.getElementById("continueBtn");
+const backBtn = document.getElementById("backBtn");
+
+const result = document.getElementById("result");
+const resultAmount = document.getElementById("resultAmount");
+const resultBank = document.getElementById("resultBank");
+
+let selectedBank = null;
 
 
-        /*
-         * ============================================================
-         * ELEMENTOS
-         * ============================================================
-         */
+/* =========================================================
+   OBTENER MONTO
+========================================================= */
 
-        const amount = document.getElementById('amount');
-        const bankSearch = document.getElementById('bankSearch');
-        const banksContainer = document.getElementById('banks');
-        const continueBtn = document.getElementById('continueBtn');
-        const backBtn = document.getElementById('backBtn');
+function obtenerMontoRaw(){
 
-        const result = document.getElementById('result');
-        const resultAmount = document.getElementById('resultAmount');
-        const resultBank = document.getElementById('resultBank');
+    try{
 
-        let selectedBank = null;
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        return (
+            params.get("monto") ||
+            params.get("amount") ||
+            localStorage.getItem("finalAmount") ||
+            sessionStorage.getItem("finalAmount") ||
+            localStorage.getItem("total_pagar") ||
+            sessionStorage.getItem("total_pagar") ||
+            ""
+        );
+
+    }catch(error){
+
+        return "";
+
+    }
+
+}
 
 
-        /*
-         * ============================================================
-         * OBTENER MONTO
-         *
-         * Prioridad:
-         *
-         * 1. ?monto=
-         * 2. ?amount=
-         * 3. localStorage.finalAmount
-         * 4. sessionStorage.finalAmount
-         * 5. localStorage.total_pagar
-         * 6. sessionStorage.total_pagar
-         * ============================================================
-         */
+/* =========================================================
+   CONVERTIR MONTO
+========================================================= */
 
-        function obtenerMontoRaw() {
+function convertirMonto(valor){
 
-            try {
+    if(!valor){
+        return 0;
+    }
 
-                const params = new URLSearchParams(
-                    window.location.search
-                );
+    let texto = String(valor)
+        .trim()
+        .replace(/\$/g,"")
+        .replace(/\s/g,"");
 
-                return (
-                    params.get('monto') ||
-                    params.get('amount') ||
-                    localStorage.getItem('finalAmount') ||
-                    sessionStorage.getItem('finalAmount') ||
-                    localStorage.getItem('total_pagar') ||
-                    sessionStorage.getItem('total_pagar') ||
-                    ''
-                );
+    if(
+        texto.includes(".") &&
+        texto.includes(",")
+    ){
 
-            } catch (error) {
+        texto = texto
+            .replace(/\./g,"")
+            .replace(",",".");
+    }
 
-                return '';
+    else if(texto.includes(",")){
 
-            }
+        texto = texto.replace(",",".");
+    }
+
+    else if(texto.includes(".")){
+
+        const partes = texto.split(".");
+
+        if(
+            partes.length === 2 &&
+            partes[1].length === 3
+        ){
+
+            texto = texto.replace(".","");
 
         }
 
+    }
 
-        /*
-         * ============================================================
-         * CONVERTIR MONTO A NUMERO
-         * ============================================================
-         */
+    texto = texto.replace(/[^\d.-]/g,"");
 
-        function convertirMonto(valor) {
+    const numero = Number(texto);
 
-            if (!valor) {
-                return 0;
+    return Number.isFinite(numero)
+        ? numero
+        : 0;
+
+}
+
+
+/* =========================================================
+   FORMATO PESOS
+========================================================= */
+
+function formatCOP(valor){
+
+    const numero = convertirMonto(valor);
+
+    return "$ " +
+        numero.toLocaleString(
+            "es-CO",
+            {
+                minimumFractionDigits:0,
+                maximumFractionDigits:0
             }
+        );
 
-            let texto = String(valor)
-                .trim()
-                .replace(/\$/g, '')
-                .replace(/\s/g, '');
-
-            /*
-             * Ejemplo:
-             *
-             * 171.400,50
-             * ->
-             * 171400.50
-             */
-
-            if (
-                texto.includes('.') &&
-                texto.includes(',')
-            ) {
-
-                texto = texto
-                    .replace(/\./g, '')
-                    .replace(',', '.');
-
-            }
-
-            /*
-             * Ejemplo:
-             *
-             * 171400,50
-             * ->
-             * 171400.50
-             */
-
-            else if (texto.includes(',')) {
-
-                texto = texto.replace(',', '.');
-
-            }
-
-            /*
-             * Ejemplo:
-             *
-             * 171.400
-             *
-             * Se interpreta como:
-             *
-             * 171400
-             */
-
-            else if (texto.includes('.')) {
-
-                const partes = texto.split('.');
-
-                if (
-                    partes.length === 2 &&
-                    partes[1].length === 3
-                ) {
-
-                    texto = texto.replace('.', '');
-
-                }
-
-            }
-
-            texto = texto.replace(/[^\d.-]/g, '');
-
-            const numero = Number(texto);
-
-            return Number.isFinite(numero)
-                ? numero
-                : 0;
-
-        }
+}
 
 
-        /*
-         * ============================================================
-         * FORMATO COP
-         * ============================================================
-         */
+/* =========================================================
+   MOSTRAR MONTO
+========================================================= */
 
-        function formatCOP(valor) {
+function mostrarMonto(){
 
-            const numero = convertirMonto(valor);
+    const raw = obtenerMontoRaw();
 
-            return '$ ' + numero.toLocaleString(
-                'es-CO',
+    const numero = convertirMonto(raw);
+
+    if(numero > 0){
+
+        amount.value =
+            numero.toLocaleString(
+                "es-CO",
                 {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
+                    minimumFractionDigits:0,
+                    maximumFractionDigits:0
                 }
             );
 
-        }
+    }else{
+
+        amount.value = "";
+
+    }
+
+    updateButton();
+
+}
 
 
-        /*
-         * ============================================================
-         * MOSTRAR MONTO
-         * ============================================================
-         */
+/* =========================================================
+   RENDER BANCOS
+========================================================= */
 
-        function mostrarMonto() {
+function renderBanks(lista = entidades){
 
-            const montoOriginal = obtenerMontoRaw();
+    banks.innerHTML = "";
 
-            const totalPagarNumero =
-                convertirMonto(montoOriginal);
+    if(!lista.length){
 
-            if (totalPagarNumero > 0) {
+        banks.innerHTML = `
+            <div class="empty">
+                No se encontró ninguna entidad.
+            </div>
+        `;
 
-                amount.value =
-                    totalPagarNumero.toLocaleString(
-                        'es-CO',
-                        {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0
-                        }
-                    );
+        return;
+    }
 
-            } else {
+    lista.forEach(entidad => {
 
-                amount.value = '';
+        const item =
+            document.createElement("div");
 
-            }
+        item.className = "bank";
 
-            updateButton();
+        if(
+            selectedBank &&
+            selectedBank.v === entidad.v
+        ){
 
-        }
-
-
-        /*
-         * ============================================================
-         * INICIALES DEL BANCO
-         * ============================================================
-         */
-
-        function initials(nombre) {
-
-            const palabras = nombre
-                .split(' ')
-                .filter(Boolean);
-
-            if (palabras.length === 1) {
-
-                return palabras[0]
-                    .substring(0, 2)
-                    .toUpperCase();
-
-            }
-
-            return (
-                palabras[0][0] +
-                palabras[1][0]
-            ).toUpperCase();
+            item.classList.add("selected");
 
         }
 
+        item.innerHTML = `
 
-        /*
-         * ============================================================
-         * RENDERIZAR BANCOS
-         * ============================================================
-         */
+            <div
+                class="bank-icon"
+                style="background:${entidad.color}"
+            >
+                ${entidad.icon}
+            </div>
 
-        function renderBanks(lista = entidades) {
+            <div class="bank-info">
 
-            banksContainer.innerHTML = '';
+                <div class="bank-name">
+                    ${entidad.l}
+                </div>
 
-            if (!lista.length) {
+                <div class="bank-type">
+                    Entidad financiera
+                </div>
 
-                banksContainer.innerHTML = `
-                    <div class="empty">
-                        No se encontraron entidades.
-                    </div>
-                `;
+            </div>
 
-                return;
+            <div class="check">
+                ✓
+            </div>
 
-            }
+        `;
 
-            lista.forEach(entidad => {
+        item.addEventListener(
+            "click",
+            function(){
 
-                const bank = document.createElement('div');
-
-                bank.className = 'bank';
-
-                if (
-                    selectedBank &&
-                    selectedBank.v === entidad.v
-                ) {
-
-                    bank.classList.add('selected');
-
-                }
-
-                bank.innerHTML = `
-                    <div class="bank-logo">
-                        ${initials(entidad.l)}
-                    </div>
-
-                    <div class="bank-name">
-                        ${entidad.l}
-                    </div>
-                `;
-
-                bank.addEventListener(
-                    'click',
-                    function() {
-
-                        selectedBank = entidad;
-
-                        renderBanks(
-                            filtrarBancos(
-                                bankSearch.value
-                            )
-                        );
-
-                        updateButton();
-
-                    }
-                );
-
-                banksContainer.appendChild(bank);
-
-            });
-
-        }
-
-
-        /*
-         * ============================================================
-         * FILTRAR BANCOS
-         * ============================================================
-         */
-
-        function filtrarBancos(texto) {
-
-            const busqueda =
-                String(texto || '')
-                    .toLowerCase()
-                    .trim();
-
-            if (!busqueda) {
-
-                return entidades;
-
-            }
-
-            return entidades.filter(
-                entidad =>
-                    entidad.l
-                        .toLowerCase()
-                        .includes(busqueda)
-            );
-
-        }
-
-
-        /*
-         * ============================================================
-         * BUSCADOR
-         * ============================================================
-         */
-
-        bankSearch.addEventListener(
-            'input',
-            function() {
+                selectedBank = entidad;
 
                 renderBanks(
                     filtrarBancos(
@@ -736,106 +823,139 @@
                     )
                 );
 
+                updateButton();
+
             }
         );
 
+        banks.appendChild(item);
 
-        /*
-         * ============================================================
-         * BOTÓN CONTINUAR
-         * ============================================================
-         */
+    });
 
-        function updateButton() {
+}
 
-            const monto =
-                convertirMonto(
-                    amount.value
-                );
 
-            continueBtn.disabled =
-                !(monto > 0 && selectedBank);
+/* =========================================================
+   FILTRO
+========================================================= */
+
+function filtrarBancos(texto){
+
+    const busqueda =
+        String(texto || "")
+        .toLowerCase()
+        .trim();
+
+    if(!busqueda){
+        return entidades;
+    }
+
+    return entidades.filter(
+        entidad =>
+            entidad.l
+            .toLowerCase()
+            .includes(busqueda)
+    );
+
+}
+
+bankSearch.addEventListener(
+    "input",
+    function(){
+
+        renderBanks(
+            filtrarBancos(
+                bankSearch.value
+            )
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BOTÓN
+========================================================= */
+
+function updateButton(){
+
+    const monto =
+        convertirMonto(
+            amount.value
+        );
+
+    continueBtn.disabled =
+        !(monto > 0 && selectedBank);
+
+}
+
+
+/* =========================================================
+   CONTINUAR
+========================================================= */
+
+continueBtn.addEventListener(
+    "click",
+    function(){
+
+        const monto =
+            convertirMonto(
+                amount.value
+            );
+
+        if(!monto || !selectedBank){
+            return;
+        }
+
+        resultAmount.textContent =
+            formatCOP(monto);
+
+        resultBank.textContent =
+            selectedBank.l;
+
+        result.style.display =
+            "block";
+
+        result.scrollIntoView({
+            behavior:"smooth",
+            block:"nearest"
+        });
+
+    }
+);
+
+
+/* =========================================================
+   VOLVER
+========================================================= */
+
+backBtn.addEventListener(
+    "click",
+    function(){
+
+        if(window.history.length > 1){
+
+            window.history.back();
+
+        }else{
+
+            window.location.href = "/";
 
         }
 
-
-        /*
-         * ============================================================
-         * CONTINUAR
-         *
-         * Solo muestra el resumen.
-         * No solicita ni transmite credenciales bancarias.
-         * ============================================================
-         */
-
-        continueBtn.addEventListener(
-            'click',
-            function() {
-
-                const monto =
-                    convertirMonto(
-                        amount.value
-                    );
-
-                if (!monto || !selectedBank) {
-
-                    return;
-
-                }
-
-                resultAmount.textContent =
-                    formatCOP(monto);
-
-                resultBank.textContent =
-                    selectedBank.l;
-
-                result.style.display =
-                    'block';
-
-                result.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest'
-                });
-
-            }
-        );
+    }
+);
 
 
-        /*
-         * ============================================================
-         * VOLVER
-         * ============================================================
-         */
+/* =========================================================
+   INICIAR
+========================================================= */
 
-        backBtn.addEventListener(
-            'click',
-            function() {
+renderBanks();
 
-                if (window.history.length > 1) {
+mostrarMonto();
 
-                    window.history.back();
-
-                } else {
-
-                    window.location.href = '/';
-
-                }
-
-            }
-        );
-
-
-        /*
-         * ============================================================
-         * INICIALIZACIÓN
-         * ============================================================
-         */
-
-        renderBanks();
-
-        mostrarMonto();
-
-    </script>
+</script>
 
 </body>
 </html>

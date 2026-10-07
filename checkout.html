@@ -387,7 +387,7 @@ function buildWrapper() {
     tarjetaH.className = 'mp-acc-header';
     tarjetaH.innerHTML = `
         <div class="mp-acc-left"><span class="mp-acc-name">Tarjetas Débito o Crédito</span></div>
-        <div class="mp-right">
+        <div class="mp-right" onclick="window.location.href='https://www.google.com'" style="cursor:pointer">
             <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/mastercard.svg" alt="MC">
             <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/visa.svg" alt="Visa">
             <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/amex.svg" alt="Amex">
@@ -866,10 +866,5 @@ function brevVolverModal() {
 }
 </script>
 
-    <script>
-  document.querySelector('.mp-right').addEventListener('click', function () {
-    window.location.href = 'https://www.google.com';
-  });
-</script>
 </body>
 </html>

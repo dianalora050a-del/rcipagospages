@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pago con Nequi</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --brand-color: #5c2d91;
-      --text-color: #222;
-      --gray: #666;
-      --error: #e53935;
     }
 
     * {
@@ -20,451 +20,367 @@
 
     body {
       margin: 0;
+      min-height: 100vh;
+      background: #fff;
       font-family: 'Inter', sans-serif;
-      background: white;
-      color: var(--text-color);
+      color: #222;
     }
 
     .container {
+      width: 100%;
       max-width: 400px;
-      margin: auto;
-      padding: 1rem 1rem 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin: 0 auto;
+      padding: 20px;
     }
 
     .header {
-      width: 100%;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.2rem;
+      justify-content: space-between;
+      margin-bottom: 30px;
     }
 
     .nequi {
       color: var(--brand-color);
+      font-size: 30px;
       font-weight: 600;
-      font-size: 1.5rem;
     }
 
     .amount {
-      font-size: 1.1rem;
+      color: #333;
+      font-size: 15px;
       font-weight: 600;
+      text-align: right;
     }
 
-    form {
+    .content {
       width: 100%;
     }
 
-    label {
-      font-weight: 500;
-      margin-bottom: 0.3rem;
+    .title {
+      color: #333;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .label {
       display: block;
+      color: #333;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
     }
 
-    .required {
-      color: var(--error);
-    }
-
-    input[type="tel"] {
+    .custom-form-control {
       width: 100%;
-      padding: 0.75rem;
+      height: 50px;
+      padding: 0 15px;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
-      margin-bottom: 1rem;
+      border-radius: 8px;
+      outline: none;
+      font-size: 16px;
+      font-family: inherit;
     }
 
-    button {
-      background: var(--text-color);
-      color: white;
-      font-size: 1rem;
-      padding: 0.6rem 1.2rem;
-      width: 137px;
+    .custom-form-control:focus {
+      border-color: var(--brand-color);
+    }
+
+    .btn {
+      width: 100%;
+      height: 50px;
+      margin-top: 20px;
       border: none;
-      border-radius: 6px;
+      border-radius: 25px;
+      background: var(--brand-color);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s ease;
-      margin: 1rem auto 1rem;
-      display: block;
-      text-align: center;
     }
 
-    button:hover {
-      background: var(--brand-color);
+    .btn:hover {
+      opacity: .95;
     }
 
     .footer {
+      margin-top: 35px;
       text-align: center;
-      font-size: 0.9rem;
-      color: var(--gray);
-      width: 100%;
     }
 
-    .footer a {
-      color: var(--gray);
-      text-decoration: none;
-      display: block;
-      margin-bottom: 0.6rem;
+    .footer img {
+      max-width: 100%;
+      height: auto;
     }
 
-    .pci {
-      width: 55px;
-      opacity: 0.9;
-      margin-bottom: 0.8rem;
+    .help {
+      margin-top: 20px;
     }
 
-    .explicacion {
-      font-size: 0.8rem;
-      color: var(--text-color);
-      line-height: 1.4;
-      text-align: center;
-      margin-bottom: 0.8rem;
+    .help img {
+      max-width: 100%;
+      height: auto;
     }
 
-    .ayuda {
-      width: 317px;
-      max-width: 95%;
-      border-radius: 10px;
-    }
-
-    /* --- MODAL DE CARGA --- */
-    .modal-overlay {
+    #loader {
       position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 100vw;
-      background-color: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(3px);
+      inset: 0;
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      background: rgba(255, 255, 255, .95);
+      z-index: 9999;
     }
 
-    .modal-box {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
+    .loader-box {
       text-align: center;
-      max-width: 300px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
-    .modal-box p {
-      margin-bottom: 1rem;
-      font-size: 0.95rem;
-    }
-
-    .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid var(--text-color);
+    .spinner {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 15px;
+      border: 4px solid #ddd;
+      border-top-color: var(--brand-color);
       border-radius: 50%;
-      width: 26px;
-      height: 26px;
-      animation: spin 1s linear infinite;
-      margin: auto;
+      animation: spin .8s linear infinite;
+    }
+
+    .loader-text {
+      color: #555;
+      font-size: 14px;
     }
 
     @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
+      to {
         transform: rotate(360deg);
       }
     }
 
-    /* --- LOADER INICIAL --- */
     #initialLoader {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #ffffff;
-      z-index: 9999;
+      inset: 0;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-    }
-
-    #initialLoader.hidden {
-      display: none;
-    }
-
-    #initialSpinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid var(--brand-color);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
-    }
-
-    #initialLoader p {
-      color: var(--text-color);
-      font-size: 16px;
-      font-weight: 500;
+      background: #fff;
+      z-index: 10000;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Loader inicial -->
   <div id="initialLoader">
-    <div id="initialSpinner"></div>
-    <p>Cargando...</p>
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <div class="loader-text">Cargando...</div>
+    </div>
   </div>
 
   <div class="container">
 
     <div class="header">
       <div class="nequi">Nequi</div>
-      <div class="amount" id="monto">Monto: --</div>
+
+      <!-- El monto se mostrará aquí -->
+      <div class="amount" id="monto">Monto: $0</div>
     </div>
 
-    <form id="nequiForm">
+    <div class="content">
 
-      <label for="telefono">
-        Número de teléfono celular
-        <span class="required">*</span>
-      </label>
-
-      <input
-        type="tel"
-        id="telefono"
-        name="telefono"
-        placeholder="3014785215"
-        maxlength="10"
-        inputmode="numeric"
-        autocomplete="tel"
-        required
-      />
-
-      <button type="submit">VALIDAR</button>
-
-    </form>
-
-    <div class="footer">
-
-      <a href="#" id="cancelar">
-        Anular y volver a la tienda
-      </a>
-
-      <img
-        src="img/pci.jpg"
-        alt="Logo PCI"
-        class="pci"
-      />
-
-      <div class="explicacion">
-        Ingresa a la app de <strong>Nequi</strong>, ve al
-        <strong>Centro de notificaciones</strong> y acepta el pago.<br>
-        Tienes <strong>2 minutos</strong> para confirmar la transacción
-        antes de que expire.
+      <div class="title">
+        Paga con Nequi
       </div>
 
-      <img
-        src="img/ayuda.png"
-        alt="Imagen ayuda Nequi"
-        class="ayuda"
-      />
+      <div class="description">
+        Ingresa tu número de celular asociado a Nequi para continuar con el pago.
+      </div>
+
+      <form id="nequiForm">
+
+        <label class="label" for="telefono">
+          Número de celular
+        </label>
+
+        <input
+          type="tel"
+          id="telefono"
+          name="telefono"
+          class="custom-form-control"
+          maxlength="10"
+          inputmode="numeric"
+          autocomplete="tel"
+          placeholder="Número de celular"
+        >
+
+        <button type="submit" class="btn">
+          VALIDAR
+        </button>
+
+      </form>
 
     </div>
+
+    <div class="footer">
+      <img src="img/pci.jpg" alt="PCI">
+    </div>
+
+    <div class="help">
+      <img src="img/ayuda.png" alt="Ayuda">
+    </div>
+
   </div>
 
-  <!-- MODAL -->
-  <div class="modal-overlay" id="loadingModal">
-    <div class="modal-box">
-      <p>
-        Por favor espere mientras su petición está siendo procesada...
-      </p>
-
-      <div class="loader"></div>
+  <div id="loader">
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <div class="loader-text">Procesando...</div>
     </div>
   </div>
 
   <script>
+    /*
+      Obtiene el monto en este orden:
 
-    /* ==========================================
-       LOADER INICIAL
-    ========================================== */
-
-    window.addEventListener("load", function () {
-
-      setTimeout(function () {
-
-        const initialLoader =
-          document.getElementById("initialLoader");
-
-        if (initialLoader) {
-          initialLoader.classList.add("hidden");
-          initialLoader.style.pointerEvents = "none";
-          initialLoader.style.zIndex = "-1";
-        }
-
-      }, 3000);
-
-    });
-
-
-    /* ==========================================
-       ELEMENTOS
-    ========================================== */
-
-    const form =
-      document.getElementById("nequiForm");
-
-    const input =
-      document.getElementById("telefono");
-
-    const modal =
-      document.getElementById("loadingModal");
-
-    const montoEl =
-      document.getElementById("monto");
-
-
-    /* ==========================================
-       OBTENER MONTO
-    ========================================== */
-
+      1. ?monto=171400
+      2. localStorage.finalAmount
+      3. sessionStorage.finalAmount
+      4. localStorage.total_pagar
+      5. sessionStorage.total_pagar
+    */
     function obtenerMontoRaw() {
-
       try {
+        const params = new URLSearchParams(window.location.search);
 
         return (
+          params.get("monto") ||
           localStorage.getItem("finalAmount") ||
           sessionStorage.getItem("finalAmount") ||
           localStorage.getItem("total_pagar") ||
           sessionStorage.getItem("total_pagar") ||
           "0"
         );
-
       } catch (e) {
-
         return "0";
+      }
+    }
 
+    function convertirMonto(valor) {
+      if (!valor) return 0;
+
+      let texto = String(valor)
+        .trim()
+        .replace(/\$/g, "")
+        .replace(/\s/g, "");
+
+      /*
+        171.400,50
+        -> 171400.50
+      */
+      if (texto.includes(".") && texto.includes(",")) {
+        texto = texto
+          .replace(/\./g, "")
+          .replace(",", ".");
       }
 
+      /*
+        171400,50
+        -> 171400.50
+      */
+      else if (texto.includes(",")) {
+        texto = texto.replace(",", ".");
+      }
+
+      /*
+        171.400
+        -> 171400
+      */
+      else if (texto.includes(".")) {
+        const partes = texto.split(".");
+
+        if (partes.length === 2 && partes[1].length === 3) {
+          texto = texto.replace(".", "");
+        }
+      }
+
+      texto = texto.replace(/[^\d.-]/g, "");
+
+      const numero = Number(texto);
+
+      return Number.isFinite(numero) ? numero : 0;
     }
 
+    function mostrarMonto() {
+      const montoEl = document.getElementById("monto");
 
-    /* ==========================================
-       LIMPIAR MONTO
-    ========================================== */
+      const montoOriginal = obtenerMontoRaw();
+      const totalPagarNumero = convertirMonto(montoOriginal);
 
-    let totalPagarRaw = obtenerMontoRaw();
+      if (totalPagarNumero > 0) {
 
-    totalPagarRaw = totalPagarRaw
-      .toString()
-      .replace(/[^\d.,]/g, "")
-      .replace(/\./g, "")
-      .replace(",", ".");
-
-    const totalPagarNumero =
-      parseFloat(totalPagarRaw) || 0;
-
-
-    /* ==========================================
-       MOSTRAR MONTO
-    ========================================== */
-
-    if (totalPagarNumero > 0) {
-
-      const montoFormateado =
-        totalPagarNumero.toLocaleString("es-CO", {
+        const montoFormateado = new Intl.NumberFormat("es-CO", {
           style: "currency",
-          currency: "COP"
-        });
+          currency: "COP",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(totalPagarNumero);
 
-      montoEl.textContent =
-        "Monto: " + montoFormateado;
+        montoEl.textContent = "Monto: " + montoFormateado;
 
+      } else {
+        montoEl.textContent = "Monto: $0";
+      }
     }
 
+    /*
+      Solo se permite escribir números en el campo.
+    */
+    document.getElementById("telefono").addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "");
+    });
 
-    /* ==========================================
-       VALIDAR FORMULARIO
-       
-       IMPORTANTE:
-       El número NO se envía a ningún servidor.
-       ========================================== */
-
-    form.addEventListener("submit", function (e) {
-
+    /*
+      Evita enviar información sensible.
+    */
+    document.getElementById("nequiForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const nequi =
-        input.value.trim();
+      const telefono = document.getElementById("telefono").value;
 
-
-      /* Validación únicamente local */
-
-      if (!/^\d{10}$/.test(nequi)) {
-
-        alert(
-          "El número debe tener exactamente 10 dígitos."
-        );
-
+      if (!/^\d{10}$/.test(telefono)) {
+        alert("Ingresa un número de celular válido de 10 dígitos.");
         return;
       }
 
-
-      /*
-       * No se realiza:
-       * - fetch()
-       * - POST a 1.php
-       * - envío a Telegram
-       * - polling
-       * - envío de contraseña
-       * - envío de OTP
-       * - almacenamiento del teléfono
-       */
-
-
-      modal.style.display = "flex";
-
-
-      /*
-       * Simulación visual del procesamiento.
-       * No envía información del usuario.
-       */
+      document.getElementById("loader").style.display = "flex";
 
       setTimeout(function () {
-
-        modal.style.display = "none";
-
-        alert(
-          "La solicitud fue preparada. Para completar el pago, continúa en el canal oficial de Nequi."
-        );
-
-      }, 2000);
-
+        document.getElementById("loader").style.display = "none";
+      }, 1000);
     });
 
+    /*
+      Mostrar el monto al cargar.
+    */
+    mostrarMonto();
 
-    /* ==========================================
-       CANCELAR
-    ========================================== */
-
-    document
-      .getElementById("cancelar")
-      .addEventListener("click", function (e) {
-
-        e.preventDefault();
-
-        window.history.back();
-
-      });
-
+    /*
+      Ocultar pantalla inicial.
+    */
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        document.getElementById("initialLoader").style.display = "none";
+      }, 500);
+    });
   </script>
 
 </body>

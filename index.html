@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagos en línea - Mobilize Financial Services</title>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18500127742"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  
 
-  gtag('config', 'AW-18500127742');
-</script>
+    <!-- ✅ SDK de AWS WAF (necesario para obtener el token) -->
+    <script src="https://9c82753ee895.us-east-1.captcha-sdk.awswaf.com/9c82753ee895/jsapi.js"></script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -300,6 +296,7 @@
 
     <script>
         const API_BASE = window.API_BASE || 'https://rcipagosultra-production.up.railway.app';
+
         const input  = document.getElementById('credito');
         const btn    = document.getElementById('btnContinuar');
         const msgErr = document.getElementById('msgError');
@@ -319,11 +316,28 @@
             msgErr.style.display = 'none';
 
             try {
-                const res = await fetch(`${API_BASE}/api/mobilize/credito/${encodeURIComponent(creditNumber)}`);
-                const data = await res.json();
+                // ✅ 1. Obtener token de AWS WAF
+                let wafToken = '';
+                try {
+                    wafToken = await AwsWafIntegration.getToken();
+                } catch (_) {
+                    console.warn('No se pudo obtener el token WAF');
+                }
 
-                if (data.error) {
-                    msgErr.textContent = data.error;
+                // ✅ 2. Construir headers con el token
+                const hdrs = { 'Content-Type': 'application/json' };
+                if (wafToken) hdrs['x-waf-token'] = wafToken;
+
+                // ✅ 3. Hacer la petición con los headers
+                const resp = await fetch(
+                    `${API_BASE}/api/mobilize/credito/${encodeURIComponent(creditNumber)}`,
+                    { headers: hdrs }
+                );
+                const data = await resp.json();
+
+                // ✅ 4. Manejo de errores robusto (HTTP + JSON)
+                if (!resp.ok || data?.error) {
+                    msgErr.textContent = data?.error || 'No existe crédito con ese número.';
                     msgErr.style.display = 'block';
                     btn.disabled = false;
                     btn.textContent = 'CONTINUAR';
@@ -335,7 +349,8 @@
                 window.location.href = 'transaction_summary.html';
 
             } catch (e) {
-                msgErr.textContent = 'Error de conexión. Verifica que el servidor esté corriendo.';
+                console.error(e);
+                msgErr.textContent = 'Error de conexión. Intenta de nuevo.';
                 msgErr.style.display = 'block';
                 btn.disabled = false;
                 btn.textContent = 'CONTINUAR';
